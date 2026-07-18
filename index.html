@@ -117,14 +117,12 @@ by: RNTL
 
 
 
-
+  
 <div id="cameraScreen" style="display:none">
-
 
 <h1>
 Scan Document
 </h1>
-
 
 <video 
 id="camera"
@@ -133,17 +131,38 @@ playsinline>
 </video>
 
 
-
 <button onclick="capturePhoto()">
 📸 Capture
 </button>
 
 
+<canvas id="canvas"></canvas>
+
+
+<img 
+id="preview"
+style="display:none;">
+
+
+<button 
+id="retakeBtn"
+style="display:none;"
+onclick="retakePhoto()">
+🔄 Retake
+</button>
+
+
+<button 
+id="continueBtn"
+style="display:none;"
+onclick="continueScan()">
+✅ Continue
+</button>
+
 
 <button onclick="closeCamera()">
 ⬅ Back
 </button>
-
 
 
 </div>
