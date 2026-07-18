@@ -85,7 +85,7 @@ document
 
     });
 
-
+   console.log("VALID USER:", validUser);
 
     if(!validUser){
 
