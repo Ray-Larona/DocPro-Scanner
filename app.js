@@ -1,13 +1,8 @@
-/* ==========================================
-   DOCPRO SCANNER V2
-   APP.JS PART 1/3
-========================================== */
-
-
 /* ==========================
    GLOBAL VARIABLES
 ========================== */
 
+console.log("APP JS LOADED");
 
 let cameraStream = null;
 
