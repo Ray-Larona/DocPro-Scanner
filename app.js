@@ -35,15 +35,9 @@ const pageCount = document.getElementById("pageCount");
 const thumbCounter = document.getElementById("thumbCounter");
 
 
-
 /* ==========================
-   LOGIN SYSTEM
+LOGIN SYSTEM
 ========================== */
-
-document
-.getElementById("loginBtn")
-.addEventListener("click", function(){
-
 
 document
 .getElementById("loginBtn")
@@ -51,13 +45,13 @@ document
 
     console.log("LOGIN CLICKED");
 
+
     let username =
     document.getElementById("username").value.trim();
 
+
     let password =
     document.getElementById("password").value.trim();
-
-});
 
 
 
@@ -84,10 +78,8 @@ document
 
     let validUser = users.find(function(user){
 
-
         return user.username === username &&
                user.password === password;
-
 
     });
 
@@ -95,11 +87,9 @@ document
 
     if(!validUser){
 
-
         alert("Invalid username or password");
 
         return;
-
 
     }
 
@@ -111,7 +101,6 @@ document
 
 
 });
-
 
 
 /* ==========================
