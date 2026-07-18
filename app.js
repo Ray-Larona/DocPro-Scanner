@@ -63,18 +63,18 @@ document
    const users = [
 
     {
-        username:"admin1",
-        password:"1234"
+        username:"Ray",
+        password:"1926"
     },
 
     {
-        username:"admin2",
-        password:"1234"
+        username:"Dawn",
+        password:"54321"
     },
 
     {
-        username:"admin3",
-        password:"1234"
+        username:"User",
+        password:"12345"
     }
 
 ];
