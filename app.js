@@ -50,10 +50,12 @@ document
     document.getElementById("username").value.trim();
 
 
-    let password =
-    document.getElementById("password").value.trim();
+   let password =
+   document.getElementById("password").value.trim();
 
 
+   console.log("USERNAME:", username);
+   console.log("PASSWORD:", password);
 
     const users = [
 
