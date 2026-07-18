@@ -60,14 +60,41 @@ document
 
 
 
-    if(username === "" || password === ""){
+   const users = [
 
+    {
+        username:"admin1",
+        password:"1234"
+    },
 
-        alert("Please enter username and password");
+    {
+        username:"admin2",
+        password:"1234"
+    },
 
-        return;
-
+    {
+        username:"admin3",
+        password:"1234"
     }
+
+];
+
+
+let validUser = users.find(function(user){
+
+    return user.username === username &&
+           user.password === password;
+
+});
+
+
+if(!validUser){
+
+    alert("Invalid username or password");
+
+    return;
+
+}
 
 
 
