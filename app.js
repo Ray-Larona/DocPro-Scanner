@@ -1,319 +1,274 @@
 const USERS = [
-
-{
- password:"ray1926",
- role:"ADMIN"
-},
-
-{
- password:"dawn1234",
- role:"USER"
-},
-
-{
- password:"12345",
- role:"User2"
-}
-
+  {
+    password: "ray1926",
+    role: "ADMIN"
+  },
+  {
+    password: "dawn1234",
+    role: "USER"
+  },
+  {
+    password: "12345",
+    role: "User2"
+  }
 ];
 
 
-
+// LOGIN
 function login(){
 
-let password =
-document.getElementById("password").value;
+  let password =
+  document.getElementById("password").value;
 
 
-let user =
-USERS.find(
-u => u.password === password
-);
+  let user =
+  USERS.find(
+    u => u.password === password
+  );
 
 
-if(user){
+  if(user){
+
+    document.getElementById(
+      "loginScreen"
+    ).style.display="none";
 
 
-document.getElementById(
-"loginScreen"
-).style.display="none";
+    document.getElementById(
+      "homeScreen"
+    ).style.display="block";
 
 
-document.getElementById(
-"homeScreen"
-).style.display="block";
+    sessionStorage.setItem(
+      "role",
+      user.role
+    );
 
 
-sessionStorage.setItem(
-"role",
-user.role
-);
+  } else {
 
+    alert("Invalid password");
 
-}
-else{
-
-alert("Invalid password");
-
-}
+  }
 
 }
 
 
 
-
+// LOGOUT
 function logout(){
 
-sessionStorage.clear();
+  sessionStorage.clear();
 
 
-document.getElementById(
-"homeScreen"
-).style.display="none";
+  document.getElementById(
+    "homeScreen"
+  ).style.display="none";
 
 
-document.getElementById(
-"loginScreen"
-).style.display="block";
+  document.getElementById(
+    "loginScreen"
+  ).style.display="block";
 
 
-document.getElementById(
-"password"
-).value="";
+  document.getElementById(
+    "password"
+  ).value="";
 
 }
 
 
 
-
-
-
+// OPEN CAMERA
 function openScanner(){
 
-
-document.getElementById(
-"homeScreen"
-).style.display="none";
-
-
-document.getElementById(
-"cameraScreen"
-).style.display="block";
+  document.getElementById(
+    "homeScreen"
+  ).style.display="none";
 
 
-startCamera();
+  document.getElementById(
+    "cameraScreen"
+  ).style.display="block";
 
+
+  startCamera();
 
 }
 
 
 
-
-
-
+// START CAMERA
 function startCamera(){
 
+  navigator.mediaDevices.getUserMedia({
 
-navigator.mediaDevices.getUserMedia({
+    video:{
+      facingMode:"environment"
+    }
 
-video:{
-facingMode:"environment"
-}
-
-})
-
-
-.then(function(stream){
+  })
 
 
-let video =
-document.getElementById("camera");
+  .then(function(stream){
+
+    let video =
+    document.getElementById("camera");
 
 
-video.srcObject = stream;
+    video.srcObject = stream;
+
+  })
 
 
-})
+  .catch(function(error){
 
+    alert(
+      "Camera Error: " + error.message
+    );
 
-.catch(function(error){
-
-alert(
-"Camera Error: " + error.message
-);
-
-});
-
+  });
 
 }
 
 
 
-
-
-
-
+// CAPTURE PHOTO
 function capturePhoto(){
 
-
-let video =
-document.getElementById("camera");
-
-
-let canvas =
-document.getElementById("canvas");
+  let video =
+  document.getElementById("camera");
 
 
-let preview =
-document.getElementById("preview");
+  let canvas =
+  document.getElementById("canvas");
 
 
-
-canvas.width =
-video.videoWidth;
-
-
-canvas.height =
-video.videoHeight;
+  let preview =
+  document.getElementById("preview");
 
 
-
-let ctx =
-canvas.getContext("2d");
-
+  canvas.width =
+  video.videoWidth;
 
 
-ctx.drawImage(
-video,
-0,
-0,
-canvas.width,
-canvas.height
-);
+  canvas.height =
+  video.videoHeight;
 
 
-
-preview.src =
-canvas.toDataURL("image/png");
-
+  let ctx =
+  canvas.getContext("2d");
 
 
-preview.style.display="block";
+  ctx.drawImage(
+    video,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
 
 
-video.style.display="none";
+  preview.src =
+  canvas.toDataURL("image/png");
 
 
-
-document.getElementById(
-"retakeBtn"
-).style.display="block";
+  preview.style.display="block";
 
 
-document.getElementById(
-"continueBtn"
-).style.display="block";
+  video.style.display="none";
 
+
+  document.getElementById(
+    "retakeBtn"
+  ).style.display="block";
+
+
+  document.getElementById(
+    "continueBtn"
+  ).style.display="block";
 
 }
 
 
 
-
-
+// RETAKE
 function retakePhoto(){
 
-
-let video =
-document.getElementById("camera");
-
-
-let preview =
-document.getElementById("preview");
+  let video =
+  document.getElementById("camera");
 
 
-
-video.style.display="block";
-
-
-preview.style.display="none";
+  let preview =
+  document.getElementById("preview");
 
 
-
-document.getElementById(
-"retakeBtn"
-).style.display="none";
+  video.style.display="block";
 
 
-document.getElementById(
-"continueBtn"
-).style.display="none";
+  preview.style.display="none";
 
+
+  document.getElementById(
+    "retakeBtn"
+  ).style.display="none";
+
+
+  document.getElementById(
+    "continueBtn"
+  ).style.display="none";
 
 }
 
 
 
-
-
+// CONTINUE
 function continueScan(){
 
-
-alert(
-"Next: PDF Conversion"
-);
-
+  alert(
+    "Captured! Next step PDF processing"
+  );
 
 }
 
 
 
-
-
-
+// CLOSE CAMERA
 function closeCamera(){
 
-
-let video =
-document.getElementById("camera");
-
+  let video =
+  document.getElementById("camera");
 
 
-if(video.srcObject){
+  if(video.srcObject){
+
+    video.srcObject
+    .getTracks()
+    .forEach(
+      track => track.stop()
+    );
+
+  }
 
 
-video.srcObject
-.getTracks()
-.forEach(
-track=>track.stop()
-);
+  document.getElementById(
+    "cameraScreen"
+  ).style.display="none";
 
 
-}
-
-
-
-document.getElementById(
-"cameraScreen"
-).style.display="none";
-
-
-document.getElementById(
-"homeScreen"
-).style.display="block";
-
+  document.getElementById(
+    "homeScreen"
+  ).style.display="block";
 
 }
 
 
 
-
-
-
+// GALLERY
 function openGallery(){
 
-alert(
-"Gallery next step"
-);
+  alert(
+    "Gallery next step"
+  );
 
 }
