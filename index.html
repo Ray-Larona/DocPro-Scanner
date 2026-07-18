@@ -1,1 +1,162 @@
-<h1>DocPro Scanner</h1>
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+DocPro Scanner
+</title>
+
+
+<link rel="stylesheet" href="style.css">
+
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+<div id="loginScreen">
+
+
+<div class="logo">
+📄
+</div>
+
+
+<h1>
+DocPro Scanner
+</h1>
+
+
+<div class="brand">
+by: RNTL
+</div>
+
+
+<p class="subtitle">
+Professional Document Scanner
+</p>
+
+
+
+<div class="login-box">
+
+
+<input 
+type="password"
+id="password"
+placeholder="Enter Password"
+>
+
+
+
+<button onclick="login()">
+START SCANNING
+</button>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div id="homeScreen" style="display:none">
+
+
+<div class="logo">
+📄
+</div>
+
+
+<h1>
+DocPro Scanner
+</h1>
+
+
+<div class="brand">
+by: RNTL
+</div>
+
+
+
+<div class="menu">
+
+
+<button onclick="openScanner()">
+📷 Scan Document
+</button>
+
+
+<button onclick="openGallery()">
+🖼 Gallery
+</button>
+
+
+<button onclick="logout()">
+🚪 Logout
+</button>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+<div id="cameraScreen" style="display:none">
+
+
+<h1>
+Scan Document
+</h1>
+
+
+<video 
+id="camera"
+autoplay
+playsinline>
+</video>
+
+
+
+<button onclick="capturePhoto()">
+📸 Capture
+</button>
+
+
+
+<button onclick="closeCamera()">
+⬅ Back
+</button>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+<script src="app.js"></script>
+
+
+</body>
+
+</html>
