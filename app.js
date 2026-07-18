@@ -45,62 +45,67 @@ const thumbCounter = document.getElementById("thumbCounter");
    LOGIN SYSTEM
 ========================== */
 
-
 document
 .getElementById("loginBtn")
-.addEventListener("click",function(){
+.addEventListener("click", function(){
 
 
     let username =
-    document.getElementById("username").value;
+    document.getElementById("username").value.trim();
 
 
     let password =
-    document.getElementById("password").value;
+    document.getElementById("password").value.trim();
 
 
 
-   const users = [
+    const users = [
 
-    {
-        username:"Ray",
-        password:"1926"
-    },
+        {
+            username:"Ray",
+            password:"1926"
+        },
 
-    {
-        username:"Dawn",
-        password:"54321"
-    },
+        {
+            username:"Dawn",
+            password:"54321"
+        },
 
-    {
-        username:"User",
-        password:"12345"
+        {
+            username:"User",
+            password:"12345"
+        }
+
+    ];
+
+
+
+    let validUser = users.find(function(user){
+
+
+        return user.username === username &&
+               user.password === password;
+
+
+    });
+
+
+
+    if(!validUser){
+
+
+        alert("Invalid username or password");
+
+        return;
+
+
     }
 
-];
 
 
-let validUser = users.find(function(user){
+    loginScreen.style.display = "none";
 
-    return user.username === username &&
-           user.password === password;
-
-});
-
-
-if(!validUser){
-
-    alert("Invalid username or password");
-
-    return;
-
-}
-
-
-
-    loginScreen.style.display="none";
-
-    homeScreen.style.display="block";
+    homeScreen.style.display = "block";
 
 
 });
