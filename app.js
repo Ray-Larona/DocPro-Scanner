@@ -45,12 +45,19 @@ document
 .addEventListener("click", function(){
 
 
+document
+.getElementById("loginBtn")
+.addEventListener("click", function(){
+
+    console.log("LOGIN CLICKED");
+
     let username =
     document.getElementById("username").value.trim();
 
-
     let password =
     document.getElementById("password").value.trim();
+
+});
 
 
 
