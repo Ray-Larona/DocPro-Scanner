@@ -19,21 +19,16 @@ const USERS = [
 
 
 
-
-
 function login(){
-
 
 let password =
 document.getElementById("password").value;
-
 
 
 let user =
 USERS.find(
 u => u.password === password
 );
-
 
 
 if(user){
@@ -58,22 +53,16 @@ user.role
 }
 else{
 
-
 alert("Invalid password");
 
-
 }
 
-
 }
-
-
 
 
 
 
 function logout(){
-
 
 sessionStorage.clear();
 
@@ -91,7 +80,6 @@ document.getElementById(
 document.getElementById(
 "password"
 ).value="";
-
 
 }
 
@@ -150,12 +138,9 @@ video.srcObject = stream;
 
 .catch(function(error){
 
-
 alert(
-"Camera Error: "
-+ error.message
+"Camera Error: " + error.message
 );
-
 
 });
 
@@ -167,11 +152,115 @@ alert(
 
 
 
+
 function capturePhoto(){
 
 
+let video =
+document.getElementById("camera");
+
+
+let canvas =
+document.getElementById("canvas");
+
+
+let preview =
+document.getElementById("preview");
+
+
+
+canvas.width =
+video.videoWidth;
+
+
+canvas.height =
+video.videoHeight;
+
+
+
+let ctx =
+canvas.getContext("2d");
+
+
+
+ctx.drawImage(
+video,
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+
+
+preview.src =
+canvas.toDataURL("image/png");
+
+
+
+preview.style.display="block";
+
+
+video.style.display="none";
+
+
+
+document.getElementById(
+"retakeBtn"
+).style.display="block";
+
+
+document.getElementById(
+"continueBtn"
+).style.display="block";
+
+
+}
+
+
+
+
+
+function retakePhoto(){
+
+
+let video =
+document.getElementById("camera");
+
+
+let preview =
+document.getElementById("preview");
+
+
+
+video.style.display="block";
+
+
+preview.style.display="none";
+
+
+
+document.getElementById(
+"retakeBtn"
+).style.display="none";
+
+
+document.getElementById(
+"continueBtn"
+).style.display="none";
+
+
+}
+
+
+
+
+
+function continueScan(){
+
+
 alert(
-"Capture next step"
+"Next: PDF Conversion"
 );
 
 
@@ -223,10 +312,8 @@ document.getElementById(
 
 function openGallery(){
 
-
 alert(
 "Gallery next step"
 );
-
 
 }
