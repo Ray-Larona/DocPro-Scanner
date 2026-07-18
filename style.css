@@ -1,123 +1,1256 @@
-body {
+<!DOCTYPE html>
+<html lang="en">
 
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#f2f4f8;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DocPro Scanner V2</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="app">
+<!-- ===========================
+     LOGIN SCREEN
+============================ -->
+<div id="loginScreen" class="container-fluid vh-100 d-flex justify-content-center align-items-center">
+
+    <div class="login-card shadow-lg">
+
+        <div class="text-center mb-4">
+
+            <div class="logo-icon">
+                <i class="bi bi-file-earmark-text-fill"></i>
+            </div>
+
+            <h1 class="logo-title">
+                DocPro
+            </h1>
+
+            <div class="logo-subtitle">
+                Smart Document Scanner
+            </div>
+
+            <div class="logo-by">
+                by RNTL
+            </div>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Username
+            </label>
+
+            <input
+                id="username"
+                type="text"
+                class="form-control"
+                placeholder="Enter Username">
+
+        </div>
+
+        <div class="mb-4">
+
+            <label class="form-label">
+                Password
+            </label>
+
+            <input
+                id="password"
+                type="password"
+                class="form-control"
+                placeholder="Enter Password">
+
+        </div>
+
+        <button
+            id="loginBtn"
+            class="btn btn-primary w-100">
+
+            <i class="bi bi-box-arrow-in-right"></i>
+
+            Login
+
+        </button>
+
+    </div>
+
+</div>
+<!-- END LOGIN SCREEN -->
+
+<!-- ===========================
+     HOME DASHBOARD
+============================ -->
+<div id="homeScreen" class="container-fluid py-4" style="display:none;">
+
+    <div class="container">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+
+                <h2 class="fw-bold mb-1">
+                    <i class="bi bi-house-door-fill"></i>
+                    Dashboard
+                </h2>
+
+                <small class="text-muted">
+                    Welcome to DocPro Scanner V2
+                </small>
+
+            </div>
+
+            <div>
+
+                <span class="badge bg-primary fs-6 px-3 py-2">
+                    <i class="bi bi-person-circle"></i>
+                    ADMIN
+                </span>
+
+            </div>
+
+        </div>
+
+        <!-- Dashboard Cards -->
+        <div class="row g-4">
+
+            <!-- Scan -->
+            <div class="col-lg-3 col-md-6">
+
+                <div id="scanCard" class="dashboard-card">
+
+                    <div class="dashboard-icon text-primary">
+                        <i class="bi bi-camera-fill"></i>
+                    </div>
+
+                    <h5>Scan Document</h5>
+
+                    <p class="text-muted">
+                        Capture single or multiple pages.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- Documents -->
+            <div class="col-lg-3 col-md-6">
+
+                <div id="documentsCard" class="dashboard-card">
+
+                    <div class="dashboard-icon text-success">
+                        <i class="bi bi-folder-fill"></i>
+                    </div>
+
+                    <h5>Documents</h5>
+
+                    <p class="text-muted">
+                        View saved PDF files.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- Settings -->
+            <div class="col-lg-3 col-md-6">
+
+                <div id="settingsCard" class="dashboard-card">
+
+                    <div class="dashboard-icon text-warning">
+                        <i class="bi bi-gear-fill"></i>
+                    </div>
+
+                    <h5>Settings</h5>
+
+                    <p class="text-muted">
+                        Configure scanner options.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- Logout -->
+            <div class="col-lg-3 col-md-6">
+
+                <div id="logoutCard" class="dashboard-card">
+
+                    <div class="dashboard-icon text-danger">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </div>
+
+                    <h5>Logout</h5>
+
+                    <p class="text-muted">
+                        Sign out of DocPro.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END HOME DASHBOARD -->
+<!-- ===========================
+     SCANNER SCREEN
+============================ -->
+<div id="scannerScreen" class="container-fluid py-3" style="display:none;">
+
+    <div class="container-fluid">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <div>
+
+                <h3 class="fw-bold mb-0">
+                    <i class="bi bi-camera-fill"></i>
+                    DocPro Scanner
+                </h3>
+
+                <small class="text-muted">
+                    Capture clear document pages
+                </small>
+
+            </div>
+
+            <span class="badge bg-primary fs-6 px-3 py-2">
+
+                <i class="bi bi-file-earmark-text"></i>
+
+                <span id="pageCount">
+                    0
+                </span>
+
+                Page(s)
+
+            </span>
+
+        </div>
+
+        <!-- Main Scanner Layout -->
+        <div class="row g-3">
+
+            <!-- =====================
+                 CAMERA AREA
+            ====================== -->
+
+            <div class="col-lg-9">
+
+                <div class="scanner-card">
+
+                    <!-- Camera -->
+                    <div class="camera-wrapper">
+
+                        <video
+                            id="camera"
+                            autoplay
+                            playsinline
+                            muted>
+                        </video>
+
+                        <!-- Camera Overlay -->
+                        <div class="camera-overlay">
+
+                            <div class="scan-frame"></div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Hidden Canvas -->
+                    <canvas
+                        id="canvas"
+                        style="display:none;">
+                    </canvas>
+
+                    <!-- Bottom Buttons -->
+                    <div class="scanner-buttons">
+
+                        <button
+                            id="captureBtn"
+                            class="btn btn-primary btn-lg">
+
+                            <i class="bi bi-camera-fill"></i>
+
+                            Capture
+
+                        </button>
+
+                        <button
+                            id="continueBtn"
+                            class="btn btn-success btn-lg">
+
+                            <i class="bi bi-check-circle-fill"></i>
+
+                            Continue
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- =====================
+                 THUMBNAIL PANEL
+            ====================== -->
+
+            <div class="col-lg-3">
+
+                <div class="thumbnail-card">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+
+                        <h5 class="mb-0">
+
+                            <i class="bi bi-images"></i>
+
+                            Pages
+
+                        </h5>
+
+                        <span
+                            id="thumbCounter"
+                            class="badge bg-secondary">
+
+                            0
+
+                        </span>
+
+                    </div>
+
+                    <!-- Thumbnail Container -->
+                    <div
+                        id="thumbnailContainer"
+                        class="thumbnail-container">
+
+                        <!-- JS will insert thumbnails here -->
+
+                    </div>
+
+                    <!-- Add Another Page -->
+                    <button
+                        id="addPageBtn"
+                        class="btn btn-outline-primary w-100 mt-3">
+
+                        <i class="bi bi-plus-circle"></i>
+
+                        Add Scan
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END SCANNER SCREEN -->
+<!-- ===========================
+     PREVIEW MODAL
+=========================== -->
+<div class="modal fade"
+     id="previewModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <!-- Header -->
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    <i class="bi bi-file-image"></i>
+
+                    Document Preview
+
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body text-center">
+
+                <img
+                    id="previewImage"
+                    src=""
+                    class="img-fluid rounded shadow"
+                    style="max-height:70vh;">
+
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer justify-content-between">
+
+                <div>
+
+                    <button
+                        id="rotateBtn"
+                        class="btn btn-warning">
+
+                        <i class="bi bi-arrow-clockwise"></i>
+
+                        Rotate
+
+                    </button>
+
+                    <button
+                        id="replaceBtn"
+                        class="btn btn-info text-white">
+
+                        <i class="bi bi-arrow-repeat"></i>
+
+                        Replace
+
+                    </button>
+
+                    <button
+                        id="deleteBtn"
+                        class="btn btn-danger">
+
+                        <i class="bi bi-trash-fill"></i>
+
+                        Delete
+
+                    </button>
+
+                </div>
+
+                <button
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                    Close
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END PREVIEW MODAL -->
+<!-- ===========================
+     REVIEW SCREEN
+=========================== -->
+<div id="reviewScreen" class="container-fluid py-4" style="display:none;">
+
+    <div class="container">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+
+                <h2 class="fw-bold mb-1">
+                    <i class="bi bi-file-earmark-check-fill"></i>
+                    Review Document
+                </h2>
+
+                <small class="text-muted">
+                    Check every page before creating your PDF
+                </small>
+
+            </div>
+
+            <button
+                id="backToScannerBtn"
+                class="btn btn-outline-secondary">
+
+                <i class="bi bi-arrow-left"></i>
+
+                Back
+
+            </button>
+
+        </div>
+
+        <!-- Pages Container -->
+        <div
+            id="reviewContainer"
+            class="row g-4">
+
+            <!--
+                JS will automatically create:
+
+                Page 1
+                Preview
+                Rotate
+                Replace
+                Delete
+            -->
+
+        </div>
+
+        <!-- Bottom Buttons -->
+        <div class="text-center mt-5">
+
+            <button
+                id="createPdfBtn"
+                class="btn btn-success btn-lg px-5">
+
+                <i class="bi bi-file-earmark-pdf-fill"></i>
+
+                Create PDF
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END REVIEW SCREEN -->
+<!-- ===========================
+     LOADING OVERLAY
+=========================== -->
+<div id="loadingOverlay" class="loading-overlay" style="display:none;">
+
+    <div class="loading-box">
+
+        <div class="spinner-border text-primary mb-3"
+             role="status">
+        </div>
+
+        <h4 class="mb-2">
+            Preparing PDF...
+        </h4>
+
+        <p class="text-muted mb-3">
+            Please wait...
+        </p>
+
+        <div class="progress">
+
+            <div id="loadingProgress"
+                 class="progress-bar progress-bar-striped progress-bar-animated"
+                 style="width:0%">
+                0%
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END LOADING OVERLAY -->
+
+
+<!-- ===========================
+     SUCCESS MODAL
+=========================== -->
+<div class="modal fade"
+     id="successModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-body text-center p-5">
+
+                <div class="display-1 text-success mb-3">
+
+                    <i class="bi bi-check-circle-fill"></i>
+
+                </div>
+
+                <h3>
+
+                    PDF Created Successfully
+
+                </h3>
+
+                <p class="text-muted">
+
+                    Your document is now ready.
+
+                </p>
+
+                <button
+                    class="btn btn-success px-5"
+                    data-bs-dismiss="modal">
+
+                    OK
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- END SUCCESS MODAL -->
+<!-- ===========================
+     JAVASCRIPT LIBRARIES
+=========================== -->
+
+<!-- Bootstrap Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- PDF-LIB -->
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+
+<!-- OpenCV -->
+<script async src="https://docs.opencv.org/4.x/opencv.js"></script>
+
+<!-- Main JavaScript -->
+<script src="app.js"></script>
+
+</div>
+<!-- END APP -->
+
+</body>
+</html>
+
+
+
+/* ==========================
+   SCANNER LAYOUT
+========================== */
+
+
+.scanner-card{
+
+    background:white;
+
+    padding:20px;
+
+    border-radius:25px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.08);
 
 }
 
 
-.app {
 
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
+.camera-wrapper{
 
-}
+    position:relative;
 
+    width:100%;
 
+    height:65vh;
 
-.logo {
+    min-height:400px;
 
-  font-size:70px;
+    background:#111827;
 
-}
+    border-radius:20px;
 
-
-
-h1 {
-
-  margin:10px 0 0 0;
-  font-size:32px;
+    overflow:hidden;
 
 }
 
 
 
-.brand {
+#camera{
 
-  font-size:12px;
-  color:#888;
-  margin-top:3px;
-  margin-bottom:15px;
+    width:100%;
 
-}
+    height:100%;
 
-
-
-.subtitle {
-
-  color:#666;
-  margin-bottom:30px;
+    object-fit:cover;
 
 }
 
 
 
-.login-box {
-
-  background:white;
-  padding:30px;
-  border-radius:20px;
-  width:300px;
-  box-shadow:0 10px 30px rgba(0,0,0,.1);
-
-}
+/* ==========================
+   CAMERA OVERLAY
+========================== */
 
 
+.camera-overlay{
 
-input {
+    position:absolute;
 
-  width:100%;
-  box-sizing:border-box;
-  padding:15px;
-  border-radius:10px;
-  border:1px solid #ccc;
-  margin-bottom:15px;
-  font-size:16px;
+    inset:0;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    pointer-events:none;
 
 }
 
 
 
-button {
+.scan-frame{
 
-  width:100%;
-  padding:15px;
-  border:none;
-  border-radius:10px;
-  background:#111827;
-  color:white;
-  font-size:16px;
-  cursor:pointer;
-  margin:8px 0;
+    width:75%;
 
-}
+    height:70%;
 
+    border:3px solid rgba(255,255,255,.8);
 
+    border-radius:15px;
 
-button:hover {
+    box-shadow:
 
-  opacity:.9;
+    0 0 0 9999px rgba(0,0,0,.25);
 
 }
 
 
 
-.menu {
+/* ==========================
+   SCANNER BUTTONS
+========================== */
 
-  width:300px;
+
+.scanner-buttons{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:15px;
+
+    margin-top:20px;
 
 }
 
 
 
-#camera {
+.scanner-buttons button{
 
-  width:100%;
-  max-width:400px;
-  border-radius:20px;
+    min-width:160px;
+
+    padding:14px 25px;
 
 }
+
+
+
+/* ==========================
+   THUMBNAIL PANEL
+========================== */
+
+
+.thumbnail-card{
+
+    background:white;
+
+    padding:20px;
+
+    border-radius:20px;
+
+    height:65vh;
+
+    overflow:hidden;
+
+}
+
+
+
+.thumbnail-container{
+
+    height:calc(65vh - 120px);
+
+    overflow-y:auto;
+
+    padding-right:5px;
+
+}
+
+
+
+/* Scrollbar */
+
+.thumbnail-container::-webkit-scrollbar{
+
+    width:6px;
+
+}
+
+
+.thumbnail-container::-webkit-scrollbar-thumb{
+
+    background:#cbd5e1;
+
+    border-radius:10px;
+
+}
+
+
+
+/* ==========================
+   THUMBNAIL ITEM
+========================== */
+
+
+.thumbnail-item{
+
+    position:relative;
+
+    margin-bottom:15px;
+
+    cursor:pointer;
+
+}
+
+
+
+.thumbnail-item img{
+
+    width:100%;
+
+    height:120px;
+
+    object-fit:cover;
+
+    border-radius:12px;
+
+    border:2px solid transparent;
+
+    transition:.2s;
+
+}
+
+
+
+.thumbnail-item:hover img{
+
+    border-color:#2563eb;
+
+}
+
+
+
+.thumbnail-number{
+
+    position:absolute;
+
+    top:8px;
+
+    left:8px;
+
+    background:#2563eb;
+
+    color:white;
+
+    font-size:12px;
+
+    padding:4px 8px;
+
+    border-radius:20px;
+
+}
+
+
+
+/* ==========================
+   ADD SCAN BUTTON
+========================== */
+
+
+#addPageBtn{
+
+    height:45px;
+
+    border-radius:12px;
+
+}
+
+
+
+/* ==========================
+   BADGES
+========================== */
+
+
+.badge{
+
+    border-radius:20px;
+
+}
+
+
+
+/* ==========================
+   BUTTON EFFECT
+========================== */
+
+
+.btn{
+
+    transition:.2s;
+
+}
+
+
+
+.btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+
+
+/* ==========================================
+   DOCPRO SCANNER V2
+   STYLE.CSS PART 3/3
+========================================== */
+
+
+/* ==========================
+   PREVIEW MODAL
+========================== */
+
+
+#previewModal .modal-content{
+
+    border-radius:25px;
+
+    overflow:hidden;
+
+}
+
+
+
+#previewImage{
+
+    max-width:100%;
+
+    object-fit:contain;
+
+    border-radius:15px;
+
+}
+
+
+
+/* ==========================
+   REVIEW SCREEN
+========================== */
+
+
+#reviewScreen{
+
+    min-height:100vh;
+
+}
+
+
+
+.review-card{
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:20px;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,.08);
+
+}
+
+
+
+.review-card img{
+
+    width:100%;
+
+    height:350px;
+
+    object-fit:contain;
+
+    background:#f3f4f6;
+
+    border-radius:15px;
+
+}
+
+
+
+/* Review Buttons */
+
+.review-card .btn{
+
+    margin:5px;
+
+}
+
+
+
+/* ==========================
+   LOADING OVERLAY
+========================== */
+
+
+.loading-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.55);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:9999;
+
+}
+
+
+
+.loading-box{
+
+    width:350px;
+
+    background:white;
+
+    padding:35px;
+
+    border-radius:25px;
+
+    text-align:center;
+
+    box-shadow:
+
+    0 20px 60px rgba(0,0,0,.2);
+
+}
+
+
+
+.progress{
+
+    height:12px;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+}
+
+
+
+/* ==========================
+   SUCCESS MODAL
+========================== */
+
+
+#successModal .modal-content{
+
+    border-radius:25px;
+
+}
+
+
+
+#successModal .display-1{
+
+    font-size:80px;
+
+}
+
+
+
+/* ==========================
+   ANIMATION
+========================== */
+
+
+@keyframes fadeIn{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(20px);
+
+    }
+
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+
+
+.login-card,
+.dashboard-card,
+.scanner-card,
+.thumbnail-card{
+
+    animation:fadeIn .4s ease;
+
+}
+
+
+
+/* ==========================
+   MOBILE RESPONSIVE
+========================== */
+
+
+@media(max-width:768px){
+
+
+    .login-card{
+
+        width:90%;
+
+        padding:30px;
+
+    }
+
+
+
+    .camera-wrapper{
+
+        height:55vh;
+
+        min-height:300px;
+
+    }
+
+
+
+    .thumbnail-card{
+
+        height:auto;
+
+        margin-top:15px;
+
+    }
+
+
+
+    .thumbnail-container{
+
+        height:auto;
+
+        max-height:300px;
+
+    }
+
+
+
+    .scanner-buttons{
+
+        flex-direction:column;
+
+    }
+
+
+
+    .scanner-buttons button{
+
+        width:100%;
+
+    }
+
+
+
+    .logo-title{
+
+        font-size:30px;
+
+    }
+
+
+}
+
+
+
+/* ==========================
+   SMALL PHONE
+========================== */
+
+
+@media(max-width:480px){
+
+
+    .camera-wrapper{
+
+        height:45vh;
+
+    }
+
+
+
+    .scan-frame{
+
+        width:85%;
+
+        height:60%;
+
+    }
+
+
+
+    .dashboard-card{
+
+        padding:20px;
+
+    }
+
+
+}
+
+
+/* END STYLE.CSS */
