@@ -1,5 +1,3 @@
-App.js
-
 /* ==========================
    GLOBAL VARIABLES
 ========================== */
@@ -35,8 +33,6 @@ const thumbnailContainer = document.getElementById("thumbnailContainer");
 const pageCount = document.getElementById("pageCount");
 
 const thumbCounter = document.getElementById("thumbCounter");
-
-let tempCapturedImage = null; // Dito muna itatago ang litrato bago i-save
 
 
 /* ==========================
@@ -103,9 +99,11 @@ document
 // Gumamit ng Bootstrap class para siguradong tanggal ang display flex
 loginScreen.classList.add("d-none"); 
 loginScreen.classList.remove("d-flex"); 
+
+// Ipakita ang home dashboard
 homeScreen.style.display = "block";
 
-history.pushState({ page: 'dashboard' }, 'Dashboard', '#dashboard');
+
 
 });
 
@@ -146,11 +144,10 @@ document
     scannerScreen.style.display = "none";
 homeScreen.style.display = "none";
 
+
 // Ibalik ang flexbox utility ng login screen
 loginScreen.classList.remove("d-none");
 loginScreen.classList.add("d-flex");
-
-history.replaceState({ page: 'login' }, 'Login', ' ');
 
 
 });
@@ -273,29 +270,71 @@ document
 
 
 function capturePhoto(){
+
+
     if(!camera.videoWidth){
+
+
         alert("Camera not ready");
+
         return;
+
     }
 
-    canvas.width = camera.videoWidth;
-    canvas.height = camera.videoHeight;
 
-    let ctx = canvas.getContext("2d");
-    ctx.drawImage(camera, 0, 0, canvas.width, canvas.height);
 
-    // 1. Itabi muna ang image sa temporary variable (hindi pa muna isasave sa array)
-    tempCapturedImage = canvas.toDataURL("image/jpeg", 0.95);
+    canvas.width =
+    camera.videoWidth;
 
-    // 2. Ipakita ang litrato sa umiiral mong preview modal
-    let previewImage = document.getElementById("previewImage");
-    previewImage.src = tempCapturedImage;
 
-    // 3. Buksan ang modal
-    let modal = new bootstrap.Modal(document.getElementById("previewModal"));
-    modal.show();
+
+    canvas.height =
+    camera.videoHeight;
+
+
+
+    let ctx =
+    canvas.getContext("2d");
+
+
+
+    ctx.drawImage(
+
+        camera,
+
+        0,
+
+        0,
+
+        canvas.width,
+
+        canvas.height
+
+    );
+
+
+
+    let imageData =
+    canvas.toDataURL(
+        "image/jpeg",
+        0.95
+    );
+
+
+
+    capturedImages.push(imageData);
+
+
+
+    updateThumbnails();
+
+
+
+    updateCounter();
+
+
+
 }
-
 /* ==========================================
    DOCPRO SCANNER V2
    APP.JS PART 2/3
@@ -1043,25 +1082,3 @@ function hideLoading(){
 
 
 }
-/* ==========================
-   BACK BUTTON PROTECTION
-========================== */
-window.addEventListener('popstate', function(event) {
-    // I-check kung nakatago ang login screen (ibig sabihin, naka-login pa ang user)
-    const isUserLoggedIn = loginScreen.classList.contains("d-none");
-
-    if (isUserLoggedIn) {
-        // Kapag pinindot ang back key ng phone, itutulak natin sila pabalik sa dashboard state
-        history.pushState({ page: 'dashboard' }, 'Dashboard', '#dashboard');
-        
-        // Pwede mo rin silang ibalik sa HomeScreen kung galing sila sa Scanner Screen:
-        if (scannerScreen.style.display === "block") {
-            stopCamera();
-            scannerScreen.style.display = "none";
-            homeScreen.style.display = "block";
-        } else if (reviewScreen.style.display === "block") {
-            reviewScreen.style.display = "none";
-            homeScreen.style.display = "block";
-        }
-    }
-});
