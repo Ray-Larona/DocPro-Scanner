@@ -99,10 +99,9 @@ document
 // Gumamit ng Bootstrap class para siguradong tanggal ang display flex
 loginScreen.classList.add("d-none"); 
 loginScreen.classList.remove("d-flex"); 
-
-// Ipakita ang home dashboard
 homeScreen.style.display = "block";
 
+history.pushState({ page: 'dashboard' }, 'Dashboard', '#dashboard');
 
 });
 
@@ -146,6 +145,8 @@ homeScreen.style.display = "none";
 // Ibalik ang flexbox utility ng login screen
 loginScreen.classList.remove("d-none");
 loginScreen.classList.add("d-flex");
+
+history.replaceState({ page: 'login' }, 'Login', ' ');
 
 
 });
@@ -1080,3 +1081,25 @@ function hideLoading(){
 
 
 }
+/* ==========================
+   BACK BUTTON PROTECTION
+========================== */
+window.addEventListener('popstate', function(event) {
+    // I-check kung nakatago ang login screen (ibig sabihin, naka-login pa ang user)
+    const isUserLoggedIn = loginScreen.classList.contains("d-none");
+
+    if (isUserLoggedIn) {
+        // Kapag pinindot ang back key ng phone, itutulak natin sila pabalik sa dashboard state
+        history.pushState({ page: 'dashboard' }, 'Dashboard', '#dashboard');
+        
+        // Pwede mo rin silang ibalik sa HomeScreen kung galing sila sa Scanner Screen:
+        if (scannerScreen.style.display === "block") {
+            stopCamera();
+            scannerScreen.style.display = "none";
+            homeScreen.style.display = "block";
+        } else if (reviewScreen.style.display === "block") {
+            reviewScreen.style.display = "none";
+            homeScreen.style.display = "block";
+        }
+    }
+});
