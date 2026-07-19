@@ -20,6 +20,10 @@ const thumbnailContainer = document.getElementById("thumbnailContainer");
 const pageCount = document.getElementById("pageCount");
 const thumbCounter = document.getElementById("thumbCounter");
 
+// Initialize Bootstrap Modal once to prevent memory leaks and backdrop glitches
+const previewModalElement = document.getElementById("previewModal");
+const previewModal = previewModalElement ? bootstrap.Modal.getOrCreateInstance(previewModalElement) : null;
+
 /* ==========================
    LOGIN SYSTEM
 ========================== */
@@ -30,6 +34,7 @@ document.getElementById("loginBtn").addEventListener("click", function(event) {
     let username = document.getElementById("username").value.trim();
     let password = document.getElementById("password").value.trim();
 
+    // PRO-TIP: Good for prototypes, but secure this via backend for production!
     const users = [
         { username: "Ray", password: "1926" },
         { username: "Dawn", password: "54321" },
@@ -123,22 +128,21 @@ function capturePhoto() {
     let ctx = canvas.getContext("2d");
     ctx.drawImage(camera, 0, 0, canvas.width, canvas.height);
 
-    // Itabi muna ang image sa temporary variable (hindi pa papasok sa thumbnail)
+    // Itabi muna ang image sa temporary variable
     tempCapturedImage = canvas.toDataURL("image/jpeg", 0.95);
 
     // Ipakita ang litrato sa modal
     document.getElementById("previewImage").src = tempCapturedImage;
 
-    // I-set ang modal para sa CONFIRMATION MODE (Itatago ang edit buttons, ipapakita ang Add Scan)
+    // I-set ang modal para sa CONFIRMATION MODE
     currentPreviewIndex = null;
     document.getElementById("rotateBtn").style.display = "none";
     document.getElementById("replaceBtn").style.display = "none";
     document.getElementById("deleteBtn").style.display = "none";
     document.getElementById("saveNewScanBtn").style.display = "inline-block";
 
-    // Buksan ang modal
-    let modal = new bootstrap.Modal(document.getElementById("previewModal"));
-    modal.show();
+    // Buksan ang modal safely
+    if (previewModal) previewModal.show();
 }
 
 /* ==========================
@@ -153,10 +157,8 @@ document.getElementById("saveNewScanBtn").addEventListener("click", function() {
         
         tempCapturedImage = null; // Linisin ang variable
 
-        // I-sara ang modal
-        let modalEl = document.getElementById("previewModal");
-        let modal = bootstrap.Modal.getInstance(modalEl);
-        if (modal) modal.hide();
+        // I-sara ang modal safely
+        if (previewModal) previewModal.hide();
     }
 });
 
@@ -179,12 +181,6 @@ function updateThumbnails() {
     });
 }
 
-function updateCounter() {
-    let total = capturedImages.length;
-    pageCount.innerText = total;
-    thumbCounter.innerText = total;
-}
-
 /* ==========================
    OPEN PREVIEW (EDIT MODE)
 ========================== */
@@ -194,14 +190,19 @@ function openPreview(index) {
     let previewImage = document.getElementById("previewImage");
     previewImage.src = capturedImages[index];
 
-    // I-set ang modal para sa EDIT MODE (Ipakita ang edit buttons, itago ang Add Scan)
+    // I-set ang modal para sa EDIT MODE
     document.getElementById("rotateBtn").style.display = "inline-block";
     document.getElementById("replaceBtn").style.display = "inline-block";
     document.getElementById("deleteBtn").style.display = "inline-block";
     document.getElementById("saveNewScanBtn").style.display = "none";
 
-    let modal = new bootstrap.Modal(document.getElementById("previewModal"));
-    modal.show();
+    if (previewModal) previewModal.show();
+}
+
+function updateCounter() {
+    let total = capturedImages.length;
+    pageCount.innerText = total;
+    thumbCounter.innerText = total;
 }
 
 /* ==========================
@@ -237,28 +238,33 @@ document.getElementById("deleteBtn").addEventListener("click", function() {
         updateThumbnails();
         updateCounter();
 
-        let modalEl = document.getElementById("previewModal");
-        let modal = bootstrap.Modal.getInstance(modalEl);
-        if (modal) modal.hide();
+        if (previewModal) previewModal.hide();
 
         currentPreviewIndex = null;
     }
 });
 
+// FIXED: Instantly snapshots live feed to replace the selected page
 document.getElementById("replaceBtn").addEventListener("click", function() {
     if (currentPreviewIndex === null) return;
 
-    capturePhoto();
+    if (!camera.videoWidth) {
+        alert("Camera not ready to replace");
+        return;
+    }
 
-    // Palitan ang lumang image ng pinakabagong kuha na pumasok
-    setTimeout(() => {
-        if (capturedImages.length > 0) {
-            capturedImages.splice(currentPreviewIndex, 1, capturedImages[capturedImages.length - 1]);
-            capturedImages.pop();
-            updateThumbnails();
-            document.getElementById("previewImage").src = capturedImages[currentPreviewIndex];
-        }
-    }, 500); 
+    // Capture instantly from the background live stream
+    canvas.width = camera.videoWidth;
+    canvas.height = camera.videoHeight;
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(camera, 0, 0, canvas.width, canvas.height);
+
+    let replacedImage = canvas.toDataURL("image/jpeg", 0.95);
+    
+    // Update data array and UI elements instantly without timers
+    capturedImages[currentPreviewIndex] = replacedImage;
+    document.getElementById("previewImage").src = replacedImage;
+    updateThumbnails();
 });
 
 /* ==========================
@@ -357,10 +363,8 @@ window.addEventListener('popstate', function(event) {
     const isUserLoggedIn = loginScreen.classList.contains("d-none");
 
     if (isUserLoggedIn) {
-        // Harangin ang back key at manatili sa dashboard area
         history.pushState({ page: 'dashboard' }, 'Dashboard', '#dashboard');
         
-        // Kung nasa ibang screens, ibalik sa Home Dashboard
         if (scannerScreen.style.display === "block") {
             stopCamera();
             scannerScreen.style.display = "none";
