@@ -104,7 +104,6 @@ loginScreen.classList.remove("d-flex");
 homeScreen.style.display = "block";
 
 
-
 });
 
 
@@ -143,7 +142,6 @@ document
 
     scannerScreen.style.display = "none";
 homeScreen.style.display = "none";
-
 
 // Ibalik ang flexbox utility ng login screen
 loginScreen.classList.remove("d-none");
