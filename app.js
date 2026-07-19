@@ -96,10 +96,12 @@ document
     }
 
 
+// Gumamit ng Bootstrap class para siguradong tanggal ang display flex
+loginScreen.classList.add("d-none"); 
+loginScreen.classList.remove("d-flex"); 
 
-    loginScreen.style.display = "none";
-
-    homeScreen.style.display = "block";
+// Ipakita ang home dashboard
+homeScreen.style.display = "block";
 
 
 });
@@ -138,11 +140,12 @@ document
     stopCamera();
 
 
-    scannerScreen.style.display="none";
+    scannerScreen.style.display = "none";
+homeScreen.style.display = "none";
 
-    homeScreen.style.display="none";
-
-    loginScreen.style.display="flex";
+// Ibalik ang flexbox utility ng login screen
+loginScreen.classList.remove("d-none");
+loginScreen.classList.add("d-flex");
 
 
 });
