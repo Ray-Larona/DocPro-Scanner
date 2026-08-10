@@ -63,7 +63,7 @@ document
 
         {
             username:"Ray",
-            password:"1926"
+            password:"123456"
         },
 
         {
