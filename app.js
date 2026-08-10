@@ -587,171 +587,171 @@ function(){
 
 });
 
-
-
-
-
 /* ==========================
    DELETE IMAGE
 ========================== */
+
 document
 .getElementById("deleteBtn")
 .addEventListener(
-    "click",
-    function(){
+"click",
+function(){
 
-        /* =========================
-           DELETE NEW PHOTO
-           ========================= */
+    /* ==========================
+       DELETE NEW PHOTO
+    ========================== */
 
-        if(pendingImage !== null){
+    if(pendingImage !== null){
 
-            pendingImage = null;
+        pendingImage = null;
 
-            const modalElement =
-                document.getElementById(
-                    "previewModal"
-                );
-
-            const modal =
-                bootstrap.Modal.getInstance(
-                    modalElement
-                );
-
-            if(modal){
-                modal.hide();
-            }
-
+        const modalElement =
             document.getElementById(
-                "saveBtn"
-            ).style.display = "none";
-
-            return;
-        }
-
-   /* ==========================
-   SAVE NEW IMAGE
-   ========================== */
-
-         document
-         .getElementById("saveBtn")
-         .addEventListener(
-         "click",
-         function(){
-         
-             if(pendingImage === null){
-         
-                 return;
-         
-             }
-         
-         
-             /* Save image to pages */
-         
-             capturedImages.push(
-                 pendingImage
-             );
-         
-         
-             /* Clear temporary image */
-         
-             pendingImage = null;
-         
-         
-             /* Update thumbnails */
-         
-             updateThumbnails();
-         
-             updateCounter();
-         
-         
-             /* Close preview */
-         
-             let modalElement =
-                 document.getElementById(
-                     "previewModal"
-                 );
-         
-             let modal =
-                 bootstrap.Modal.getInstance(
-                     modalElement
-                 );
-         
-             if(modal){
-         
-                 modal.hide();
-         
-             }
-         
-         
-             /* Reset preview */
-         
-             currentPreviewIndex = null;
-         
-         
-             /* Button visibility */
-         
-             document
-             .getElementById("saveBtn")
-             .style.display = "none";
-         
-             document
-             .getElementById("replaceBtn")
-             .style.display = "inline-block";
-         
-         });
-                
-        /* =========================
-           DELETE SAVED PAGE
-           ========================= */
-
-        if(currentPreviewIndex === null){
-
-            return;
-
-        }
-
-
-        let confirmDelete =
-            confirm(
-                "Delete this page?"
+                "previewModal"
             );
 
-
-        if(confirmDelete){
-
-            capturedImages.splice(
-                currentPreviewIndex,
-                1
+        const modal =
+            bootstrap.Modal.getInstance(
+                modalElement
             );
 
-
-            updateThumbnails();
-
-            updateCounter();
-
-
-            const modalElement =
-                document.getElementById(
-                    "previewModal"
-                );
-
-            const modal =
-                bootstrap.Modal.getInstance(
-                    modalElement
-                );
-
-            if(modal){
-                modal.hide();
-            }
-
-
-            currentPreviewIndex = null;
-
+        if(modal){
+            modal.hide();
         }
+
+        document
+        .getElementById("saveBtn")
+        .style.display = "none";
+
+        document
+        .getElementById("replaceBtn")
+        .style.display = "inline-block";
+
+        return;
+    }
+
+
+    /* ==========================
+       DELETE SAVED PAGE
+    ========================== */
+
+    if(currentPreviewIndex === null){
+
+        return;
 
     }
-);
+
+
+    let confirmDelete =
+        confirm(
+            "Delete this page?"
+        );
+
+
+    if(confirmDelete){
+
+        capturedImages.splice(
+            currentPreviewIndex,
+            1
+        );
+
+
+        updateThumbnails();
+
+        updateCounter();
+
+
+        const modalElement =
+            document.getElementById(
+                "previewModal"
+            );
+
+        const modal =
+            bootstrap.Modal.getInstance(
+                modalElement
+            );
+
+        if(modal){
+            modal.hide();
+        }
+
+
+        currentPreviewIndex = null;
+
+    }
+
+});
+
+
+/* ==========================
+   SAVE NEW IMAGE
+========================== */
+
+document
+.getElementById("saveBtn")
+.addEventListener(
+"click",
+function(){
+
+    if(pendingImage === null){
+
+        return;
+
+    }
+
+
+    /* Save image */
+
+    capturedImages.push(
+        pendingImage
+    );
+
+
+    /* Clear temporary image */
+
+    pendingImage = null;
+
+
+    /* Update pages */
+
+    updateThumbnails();
+
+    updateCounter();
+
+
+    /* Close preview */
+
+    const modalElement =
+        document.getElementById(
+            "previewModal"
+        );
+
+    const modal =
+        bootstrap.Modal.getInstance(
+            modalElement
+        );
+
+    if(modal){
+        modal.hide();
+    }
+
+
+    /* Reset */
+
+    currentPreviewIndex = null;
+
+
+    /* Button visibility */
+
+    document
+    .getElementById("saveBtn")
+    .style.display = "none";
+
+    document
+    .getElementById("replaceBtn")
+    .style.display = "inline-block";
+
+});
 
 /* ==========================
    REPLACE IMAGE
