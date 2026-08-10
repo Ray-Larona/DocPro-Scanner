@@ -105,9 +105,26 @@ loginScreen.classList.remove("d-flex");
 // Ipakita ang home dashboard
 homeScreen.style.display = "block";
 
+// Remember that the user is logged in
+sessionStorage.setItem("docproLoggedIn", "true");
+
 
 });
 
+/* ==========================
+   RESTORE LOGIN AFTER REFRESH
+========================== */
+
+if(
+    sessionStorage.getItem("docproLoggedIn") === "true"
+){
+
+    loginScreen.classList.add("d-none");
+    loginScreen.classList.remove("d-flex");
+
+    homeScreen.style.display = "block";
+
+}
 
 /* ==========================
    DASHBOARD NAVIGATION
@@ -141,9 +158,10 @@ document
 
     stopCamera();
 
-
-    scannerScreen.style.display = "none";
-homeScreen.style.display = "none";
+   sessionStorage.removeItem("docproLoggedIn");
+   
+   scannerScreen.style.display = "none";
+   homeScreen.style.display = "none";
 
 // Ibalik ang flexbox utility ng login screen
 loginScreen.classList.remove("d-none");
@@ -151,10 +169,6 @@ loginScreen.classList.add("d-flex");
 
 
 });
-
-
-
-
 
 /* ==========================
    CAMERA START
