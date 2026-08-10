@@ -350,7 +350,6 @@ function capturePhoto(){
       
       document.getElementById("deleteBtn").style.display = "inline-block";
       
-      document.getElementById("replaceBtn").style.display = "none";
       
       let modal = new bootstrap.Modal(
           document.getElementById("previewModal")
@@ -641,10 +640,7 @@ function(){
         .getElementById("saveBtn")
         .style.display = "none";
 
-        document
-        .getElementById("replaceBtn")
-        .style.display = "inline-block";
-
+      
         return;
     }
 
@@ -765,10 +761,7 @@ function(){
     .getElementById("saveBtn")
     .style.display = "none";
 
-    document
-    .getElementById("replaceBtn")
-    .style.display = "inline-block";
-
+   
 });
 
 /* ==========================
