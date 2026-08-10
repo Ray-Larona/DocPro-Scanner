@@ -152,9 +152,6 @@ function(){
 
 });
 
-
-
-
 document
 .getElementById("logoutCard")
 .addEventListener("click",function(){
@@ -171,6 +168,24 @@ document
 loginScreen.classList.remove("d-none");
 loginScreen.classList.add("d-flex");
 
+
+});
+
+/* ==========================
+CLOSE CAMERA
+========================== */
+
+document
+.getElementById("closeCameraBtn")
+.addEventListener("click", function(){
+
+    stopCamera();
+
+    scannerScreen.style.display = "none";
+
+    reviewScreen.style.display = "none";
+
+    homeScreen.style.display = "block";
 
 });
 
