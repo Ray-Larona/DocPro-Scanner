@@ -686,7 +686,7 @@ MOBILE
     gap: 12px;
 }
 
-.review-item img {
+.review-card img {
     height: 190px;
 }
 ```
@@ -714,7 +714,7 @@ MOBILE
     grid-template-columns: 1fr 1fr;
 }
 
-.review-item img {
+.review-card img {
     height: 165px;
 }
 ```
