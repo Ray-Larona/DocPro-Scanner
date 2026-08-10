@@ -339,38 +339,84 @@ CAMERA AREA
 SCANNER BUTTONS
 ========================================= */
 
-#captureBtn {
-width: 76px;
-height: 76px;
-border-radius: 50%;
-border: 5px solid rgba(255, 255, 255, 0.8);
-background: white;
-color: var(--docpro-primary);
-font-size: 28px;
-display: inline-flex;
-align-items: center;
-justify-content: center;
-box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-transition: 0.15s ease;
+.scanner-buttons {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 100%;
+
+    padding: 16px 24px;
+
+    min-height: 100px;
 }
 
+
+/* ==========================
+   CAMERA BUTTON
+========================== */
+
+#captureBtn {
+    width: 76px;
+    height: 76px;
+
+    border-radius: 50%;
+
+    border: 5px solid rgba(255, 255, 255, 0.8);
+
+    background: white;
+
+    color: var(--docpro-primary);
+
+    font-size: 28px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.3);
+
+    transition: 0.15s ease;
+}
+
+
+/* ==========================
+   CONTINUE BUTTON
+========================== */
+
+#continueBtn {
+    position: absolute;
+
+    right: 24px;
+
+    min-width: 125px;
+
+    padding: 10px 16px;
+
+    border-radius: 10px;
+
+    font-size: 15px;
+
+    font-weight: 600;
+}
+
+
+/* ==========================
+   BUTTON EFFECTS
+========================== */
+
 #captureBtn:hover {
-transform: scale(1.05);
+    transform: scale(1.05);
 }
 
 #captureBtn:active {
-transform: scale(0.95);
-}
-
-#continueBtn,
-#addPageBtn {
-border-radius: 10px;
-font-weight: 600;
-}
-
-#thumbCounter {
-font-size: 13px;
-color: rgba(255, 255, 255, 0.75);
+    transform: scale(0.95);
 }
 
 /* =========================================
@@ -627,6 +673,12 @@ MOBILE
     width: 68px;
     height: 68px;
     font-size: 24px;
+}
+#continueBtn {
+    right: 15px;
+    min-width: 105px;
+    padding: 8px 12px;
+    font-size: 13px;
 }
 
 #reviewContainer {
