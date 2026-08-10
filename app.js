@@ -629,7 +629,78 @@ document
             return;
         }
 
+   /* ==========================
+   SAVE NEW IMAGE
+   ========================== */
 
+         document
+         .getElementById("saveBtn")
+         .addEventListener(
+         "click",
+         function(){
+         
+             if(pendingImage === null){
+         
+                 return;
+         
+             }
+         
+         
+             /* Save image to pages */
+         
+             capturedImages.push(
+                 pendingImage
+             );
+         
+         
+             /* Clear temporary image */
+         
+             pendingImage = null;
+         
+         
+             /* Update thumbnails */
+         
+             updateThumbnails();
+         
+             updateCounter();
+         
+         
+             /* Close preview */
+         
+             let modalElement =
+                 document.getElementById(
+                     "previewModal"
+                 );
+         
+             let modal =
+                 bootstrap.Modal.getInstance(
+                     modalElement
+                 );
+         
+             if(modal){
+         
+                 modal.hide();
+         
+             }
+         
+         
+             /* Reset preview */
+         
+             currentPreviewIndex = null;
+         
+         
+             /* Button visibility */
+         
+             document
+             .getElementById("saveBtn")
+             .style.display = "none";
+         
+             document
+             .getElementById("replaceBtn")
+             .style.display = "inline-block";
+         
+         });
+                
         /* =========================
            DELETE SAVED PAGE
            ========================= */
