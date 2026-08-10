@@ -400,44 +400,78 @@ REVIEW SCREEN
 ========================================= */
 
 #reviewScreen {
-min-height: 100vh;
-background: var(--docpro-bg);
+    min-height: 100vh;
+    background: var(--docpro-bg);
 }
 
 #reviewScreen .container {
-max-width: 1100px;
+    max-width: 1100px;
 }
 
 #reviewContainer {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-gap: 18px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 18px;
 }
 
-.review-item {
-position: relative;
-overflow: hidden;
-background: white;
-border: 1px solid var(--docpro-border);
-border-radius: 14px;
-box-shadow: 0 5px 18px rgba(15, 23, 42, 0.06);
+/* ==========================
+   REVIEW CARD
+========================== */
+
+.review-card {
+    position: relative;
+
+    overflow: hidden;
+
+    background: white;
+
+    border: 1px solid var(--docpro-border);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 5px 18px rgba(15, 23, 42, 0.06);
+
+    padding: 15px;
 }
 
-.review-item img {
-display: block;
-width: 100%;
-height: 240px;
-object-fit: contain;
-background: #f3f4f6;
+/* ==========================
+   REVIEW IMAGE
+========================== */
+
+.review-card img {
+    display: block;
+
+    width: 100%;
+
+    height: 240px;
+
+    object-fit: contain;
+
+    background: #f3f4f6;
+
+    border-radius: 8px;
 }
 
-.review-number {
-padding: 8px 10px;
-font-size: 12px;
-font-weight: 600;
-color: var(--docpro-muted);
+/* ==========================
+   MOBILE
+========================== */
+
+@media (max-width: 768px) {
+
+    .review-card img {
+        height: 190px;
+    }
+
 }
 
+@media (max-width: 480px) {
+
+    .review-card img {
+        height: 165px;
+    }
+
+}
 /* =========================================
 CREATE PDF BUTTON
 ========================================= */
