@@ -134,19 +134,23 @@ if(
 
 document
 .getElementById("scanCard")
-.addEventListener("click",function(){
+.addEventListener(
+"click",
+function(){
 
+    homeScreen.style.display = "none";
 
-    homeScreen.style.display="none";
-
-    scannerScreen.style.display="block";
-
+    scannerScreen.style.display = "block";
 
     startCamera();
 
+    history.pushState(
+        { screen: "scanner" },
+        "",
+        location.href
+    );
 
 });
-
 
 
 
@@ -863,6 +867,12 @@ function(){
 
 
     generateReview();
+  
+   history.pushState(
+    { screen: "review" },
+    "",
+    location.href
+);
 
 
 
@@ -1180,3 +1190,87 @@ function hideLoading(){
 
 
 }
+/* ==========================
+   APP NAVIGATION / ANDROID BACK
+========================== */
+
+history.replaceState(
+    { screen: "dashboard" },
+    "",
+    location.href
+);
+
+
+/* ==========================
+   SCANNER NAVIGATION
+========================== */
+
+document
+.getElementById("scanCard")
+.addEventListener(
+"click",
+function(){
+
+    homeScreen.style.display = "none";
+
+    scannerScreen.style.display = "block";
+
+    startCamera();
+
+    history.pushState(
+        { screen: "scanner" },
+        "",
+        location.href
+    );
+
+});
+
+
+/* ==========================
+   ANDROID / BROWSER BACK
+========================== */
+
+window.addEventListener(
+"popstate",
+function(event){
+
+    const screen =
+        event.state?.screen;
+
+
+    /* ==========================
+       REVIEW → SCANNER
+    ========================== */
+
+    if(screen === "scanner"){
+
+        reviewScreen.style.display = "none";
+
+        scannerScreen.style.display = "block";
+
+        startCamera();
+
+        return;
+
+    }
+
+
+    /* ==========================
+       SCANNER → DASHBOARD
+    ========================== */
+
+    if(screen === "dashboard"){
+
+        stopCamera();
+
+        scannerScreen.style.display = "none";
+
+        reviewScreen.style.display = "none";
+
+        homeScreen.style.display = "block";
+
+        return;
+
+    }
+
+});
