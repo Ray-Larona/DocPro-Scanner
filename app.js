@@ -10,6 +10,8 @@ let capturedImages = [];
 
 let currentPreviewIndex = null;
 
+let pendingImage = null;
+
 let currentCameraMode = "environment";
 
 
@@ -320,16 +322,23 @@ function capturePhoto(){
 
 
 
-    capturedImages.push(imageData);
-
-
-
-    updateThumbnails();
-
-
-
-    updateCounter();
-
+    pendingImage = imageData;
+      
+      currentPreviewIndex = null;
+      
+      document.getElementById("previewImage").src = pendingImage;
+      
+      document.getElementById("saveBtn").style.display = "inline-block";
+      
+      document.getElementById("deleteBtn").style.display = "inline-block";
+      
+      document.getElementById("replaceBtn").style.display = "none";
+      
+      let modal = new bootstrap.Modal(
+          document.getElementById("previewModal")
+      );
+      
+      modal.show();
 
 
 }
@@ -585,69 +594,93 @@ function(){
 /* ==========================
    DELETE IMAGE
 ========================== */
-
-
 document
 .getElementById("deleteBtn")
 .addEventListener(
-"click",
-function(){
+    "click",
+    function(){
 
+        /* =========================
+           DELETE NEW PHOTO
+           ========================= */
 
-    if(currentPreviewIndex === null){
+        if(pendingImage !== null){
 
-        return;
+            pendingImage = null;
 
-    }
+            const modalElement =
+                document.getElementById(
+                    "previewModal"
+                );
 
+            const modal =
+                bootstrap.Modal.getInstance(
+                    modalElement
+                );
 
+            if(modal){
+                modal.hide();
+            }
 
-    let confirmDelete =
-    confirm(
-        "Delete this page?"
-    );
-
-
-
-    if(confirmDelete){
-
-
-        capturedImages.splice(
-            currentPreviewIndex,
-            1
-        );
-
-
-
-        updateThumbnails();
-
-        updateCounter();
-
-
-
-        bootstrap
-        .Modal
-        .getInstance(
             document.getElementById(
-                "previewModal"
-            )
-        )
-        .hide();
+                "saveBtn"
+            ).style.display = "none";
+
+            return;
+        }
 
 
+        /* =========================
+           DELETE SAVED PAGE
+           ========================= */
 
-        currentPreviewIndex=null;
+        if(currentPreviewIndex === null){
+
+            return;
+
+        }
 
 
+        let confirmDelete =
+            confirm(
+                "Delete this page?"
+            );
+
+
+        if(confirmDelete){
+
+            capturedImages.splice(
+                currentPreviewIndex,
+                1
+            );
+
+
+            updateThumbnails();
+
+            updateCounter();
+
+
+            const modalElement =
+                document.getElementById(
+                    "previewModal"
+                );
+
+            const modal =
+                bootstrap.Modal.getInstance(
+                    modalElement
+                );
+
+            if(modal){
+                modal.hide();
+            }
+
+
+            currentPreviewIndex = null;
+
+        }
 
     }
-
-
-});
-
-
-
-
+);
 
 /* ==========================
    REPLACE IMAGE
