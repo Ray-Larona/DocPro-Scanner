@@ -175,61 +175,125 @@ loginScreen.classList.add("d-flex");
 });
 
 /* ==========================
-   CAMERA START
+CAMERA START - HIGH RESOLUTION
 ========================== */
-
 
 function startCamera(){
 
-
-    navigator
-    .mediaDevices
-    .getUserMedia({
+    navigator.mediaDevices.getUserMedia({
 
         video:{
 
             facingMode:{
-                ideal:currentCameraMode
-            }
+                ideal: currentCameraMode
+            },
 
+            width:{
+                ideal: 3840
+            },
+
+            height:{
+                ideal: 2160
+            },
+
+            frameRate:{
+                ideal: 30,
+                max: 30
+            }
         },
 
         audio:false
 
     })
 
-
-    .then(function(stream){
-
+    .then(async function(stream){
 
         cameraStream = stream;
 
-
         camera.srcObject = stream;
 
+        camera.setAttribute("playsinline", "");
+        camera.setAttribute("autoplay", "");
 
+        await camera.play();
 
-    })
-
-
-    .catch(function(error){
-
-
-        console.error(error);
-
-
-        alert(
-            "Camera permission denied"
+        console.log(
+            "Camera video resolution:",
+            camera.videoWidth,
+            "x",
+            camera.videoHeight
         );
 
 
+        /* ==========================
+           TRY TO ENABLE CONTINUOUS FOCUS
+        ========================== */
+
+        const track = stream.getVideoTracks()[0];
+
+        try{
+
+            const capabilities =
+                track.getCapabilities();
+
+            const advanced = {};
+
+            if(
+                capabilities.focusMode &&
+                capabilities.focusMode.includes("continuous")
+            ){
+
+                advanced.focusMode = "continuous";
+
+            }
+
+            if(
+                capabilities.zoom
+            ){
+
+                console.log(
+                    "Zoom supported:",
+                    capabilities.zoom
+                );
+
+            }
+
+            if(
+                Object.keys(advanced).length > 0
+            ){
+
+                await track.applyConstraints({
+                    advanced:[advanced]
+                });
+
+            }
+
+        }
+        catch(error){
+
+            console.log(
+                "Camera enhancement not supported:",
+                error
+            );
+
+        }
+
+    })
+
+    .catch(function(error){
+
+        console.error(
+            "Camera error:",
+            error
+        );
+
+        alert(
+            "Camera permission denied or camera is unavailable."
+        );
+
     });
 
-
 }
-
-
-
 
 
 /* ==========================
@@ -286,12 +350,13 @@ document
 });
 
 
+/* ==========================
+HIGH RESOLUTION CAPTURE
+========================== */
 
-function capturePhoto(){
+async function capturePhoto(){
 
-
-    if(!camera.videoWidth){
-
+    if(!cameraStream){
 
         alert("Camera not ready");
 
@@ -300,20 +365,150 @@ function capturePhoto(){
     }
 
 
+    const track =
+        cameraStream.getVideoTracks()[0];
+
+
+    if(!track){
+
+        alert("Camera track not available");
+
+        return;
+
+    }
+
+
+    /* ==========================
+       TRY NATIVE HIGH-RES PHOTO
+    ========================== */
+
+    if(
+        typeof ImageCapture !== "undefined"
+    ){
+
+        try{
+
+            const imageCapture =
+                new ImageCapture(track);
+
+
+            console.log(
+                "Taking high-resolution photo..."
+            );
+
+
+            const blob =
+                await imageCapture.takePhoto();
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload = function(){
+
+                pendingImage =
+                    reader.result;
+
+
+                currentPreviewIndex =
+                    null;
+
+
+                document
+                .getElementById("previewImage")
+                .src =
+                    pendingImage;
+
+
+                document
+                .getElementById("saveBtn")
+                .style.display =
+                    "inline-block";
+
+
+                document
+                .getElementById("deleteBtn")
+                .style.display =
+                    "inline-block";
+
+
+                const modal =
+                    new bootstrap.Modal(
+                        document.getElementById(
+                            "previewModal"
+                        )
+                    );
+
+
+                modal.show();
+
+            };
+
+
+            reader.readAsDataURL(blob);
+
+
+            console.log(
+                "High-resolution photo captured:",
+                blob.size,
+                "bytes"
+            );
+
+
+            return;
+
+        }
+        catch(error){
+
+            console.warn(
+                "Native high-resolution capture failed. Using fallback.",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* ==========================
+       FALLBACK CAPTURE
+       FOR SAFARI / UNSUPPORTED
+       BROWSERS
+    ========================== */
+
+    if(!camera.videoWidth){
+
+        alert("Camera not ready");
+
+        return;
+
+    }
+
 
     canvas.width =
-    camera.videoWidth;
-
+        camera.videoWidth;
 
 
     canvas.height =
-    camera.videoHeight;
+        camera.videoHeight;
 
 
+    const ctx =
+        canvas.getContext(
+            "2d",
+            {
+                alpha:false
+            }
+        );
 
-    let ctx =
-    canvas.getContext("2d");
 
+    ctx.imageSmoothingEnabled =
+        true;
+
+
+    ctx.imageSmoothingQuality =
+        "high";
 
 
     ctx.drawImage(
@@ -331,32 +526,44 @@ function capturePhoto(){
     );
 
 
-
-    let imageData =
-    canvas.toDataURL(
-        "image/jpeg",
-        0.95
-    );
-
+    pendingImage =
+        canvas.toDataURL(
+            "image/jpeg",
+            0.98
+        );
 
 
-    pendingImage = imageData;
-      
-      currentPreviewIndex = null;
-      
-      document.getElementById("previewImage").src = pendingImage;
-      
-      document.getElementById("saveBtn").style.display = "inline-block";
-      
-      document.getElementById("deleteBtn").style.display = "inline-block";
-      
-      
-      let modal = new bootstrap.Modal(
-          document.getElementById("previewModal")
-      );
-      
-      modal.show();
+    currentPreviewIndex =
+        null;
 
+
+    document
+    .getElementById("previewImage")
+    .src =
+        pendingImage;
+
+
+    document
+    .getElementById("saveBtn")
+    .style.display =
+        "inline-block";
+
+
+    document
+    .getElementById("deleteBtn")
+    .style.display =
+        "inline-block";
+
+
+    const modal =
+        new bootstrap.Modal(
+            document.getElementById(
+                "previewModal"
+            )
+        );
+
+
+    modal.show();
 
 }
 /* ==========================================
