@@ -764,62 +764,6 @@ function(){
    
 });
 
-/* ==========================
-   REPLACE IMAGE
-========================== */
-
-
-document
-.getElementById("replaceBtn")
-.addEventListener(
-"click",
-function(){
-
-
-    if(currentPreviewIndex === null){
-
-        return;
-
-    }
-
-
-
-    capturePhoto();
-
-
-
-    capturedImages.splice(
-
-        currentPreviewIndex,
-
-        1,
-
-        capturedImages[
-            capturedImages.length - 1
-        ]
-
-    );
-
-
-
-    capturedImages.pop();
-
-
-
-    updateThumbnails();
-
-
-
-    document
-    .getElementById(
-        "previewImage"
-    )
-    .src =
-    capturedImages[currentPreviewIndex];
-
-
-
-});
 /* ==========================================
    DOCPRO SCANNER V2
    APP.JS PART 3/3
