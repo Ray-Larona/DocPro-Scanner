@@ -815,24 +815,6 @@ function(){
 ========================================== */
 
 
-/* ==========================
-   ADD SCAN BUTTON
-========================== */
-
-document
-.getElementById("addPageBtn")
-.addEventListener(
-"click",
-function(){
-
-    // Camera stays open
-    // User can capture another page
-
-    alert("Ready for next page");
-
-});
-
-
 
 /* ==========================
    CONTINUE TO REVIEW
