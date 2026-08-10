@@ -1,1271 +1,571 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>DocPro Scanner V2</title>
-
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <!-- Google Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-
-<div id="app">
-<!-- ===========================
-     LOGIN SCREEN
-============================ -->
-
-<div id="loginScreen" class="container-fluid vh-100 d-flex justify-content-center align-items-center">
-
-    <div class="login-card shadow-lg">
-
-        <div class="text-center mb-4">
-
-            <div class="logo-icon">
-                <i class="bi bi-file-earmark-text-fill"></i>
-            </div>
-
-            <h1 class="logo-title">
-                DocPro
-            </h1>
-
-            <div class="logo-subtitle">
-                Smart Document Scanner
-            </div>
-
-            <div class="logo-by">
-                by RNTL
-            </div>
-
-        </div>
-
-
-        <div class="mb-3">
-
-            <label class="form-label">
-                Username
-            </label>
-
-            <input
-                id="username"
-                type="text"
-                class="form-control"
-                placeholder="Enter Username">
-
-        </div>
-
-
-        <div class="mb-4">
-
-            <label class="form-label">
-                Password
-            </label>
-
-            <input
-                id="password"
-                type="password"
-                class="form-control"
-                placeholder="Enter Password">
-
-        </div>
-
-
-        <button
-            id="loginBtn"
-            class="btn btn-primary w-100">
-
-            <i class="bi bi-box-arrow-in-right"></i>
-            Login
-
-        </button>
-
-
-    </div>
-
-</div>
-
-<!-- END LOGIN SCREEN -->
-
-<div id="homeScreen" class="container-fluid py-4" style="display:none;">
-
-    <div class="container">
-
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-
-            <div>
-
-                <h2 class="fw-bold mb-1">
-                    <i class="bi bi-house-door-fill"></i>
-                    Dashboard
-                </h2>
-
-                <small class="text-muted">
-                    Welcome to DocPro Scanner V2
-                </small>
-
-            </div>
-
-            <div>
-
-                <span class="badge bg-primary fs-6 px-3 py-2">
-                    <i class="bi bi-person-circle"></i>
-                    ADMIN
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <!-- Dashboard Cards -->
-        <div class="row g-4">
-
-
-            <!-- Scan -->
-            <div class="col-lg-3 col-md-6">
-
-                <div id="scanCard" class="dashboard-card">
-
-                    <div class="dashboard-icon text-primary">
-                        <i class="bi bi-camera-fill"></i>
-                    </div>
-
-                    <h5>
-                        Scan Document
-                    </h5>
-
-                    <p class="text-muted">
-                        Capture single or multiple pages.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <!-- Documents -->
-            <div class="col-lg-3 col-md-6">
-
-                <div id="documentsCard" class="dashboard-card">
-
-                    <div class="dashboard-icon text-success">
-                        <i class="bi bi-folder-fill"></i>
-                    </div>
-
-                    <h5>
-                        Documents
-                    </h5>
-
-                    <p class="text-muted">
-                        View saved PDF files.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <!-- Settings -->
-            <div class="col-lg-3 col-md-6">
-
-                <div id="settingsCard" class="dashboard-card">
-
-                    <div class="dashboard-icon text-warning">
-                        <i class="bi bi-gear-fill"></i>
-                    </div>
-
-                    <h5>
-                        Settings
-                    </h5>
-
-                    <p class="text-muted">
-                        Configure scanner options.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <!-- Logout -->
-            <div class="col-lg-3 col-md-6">
-
-                <div id="logoutCard" class="dashboard-card">
-
-                    <div class="dashboard-icon text-danger">
-                        <i class="bi bi-box-arrow-right"></i>
-                    </div>
-
-                    <h5>
-                        Logout
-                    </h5>
-
-                    <p class="text-muted">
-                        Sign out of DocPro.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-        </div>
-
-    </div>
-
-</div>
-<!-- ===========================
-     SCANNER SCREEN
-============================ -->
-<div id="scannerScreen" class="container-fluid py-3" style="display:none;">
-
-    <div class="container-fluid">
-
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-
-            <div>
-
-                <h3 class="fw-bold mb-0">
-                    <i class="bi bi-camera-fill"></i>
-                    DocPro Scanner
-                </h3>
-
-                <small class="text-muted">
-                    Capture clear document pages
-                </small>
-
-            </div>
-
-            <span class="badge bg-primary fs-6 px-3 py-2">
-
-                <i class="bi bi-file-earmark-text"></i>
-
-                <span id="pageCount">
-                    0
-                </span>
-
-                Page(s)
-
-            </span>
-
-        </div>
-
-        <!-- Main Scanner Layout -->
-        <div class="row g-3">
-
-            <!-- =====================
-                 CAMERA AREA
-            ====================== -->
-
-            <div class="col-lg-9">
-
-                <div class="scanner-card">
-
-                    <!-- Camera -->
-                    <div class="camera-wrapper">
-
-                        <video
-                            id="camera"
-                            autoplay
-                            playsinline
-                            muted>
-                        </video>
-
-                        <!-- Camera Overlay -->
-                        <div class="camera-overlay">
-
-                            <div class="scan-frame"></div>
-
-                        </div>
-
-                    </div>
-
-                    <!-- Hidden Canvas -->
-                    <canvas
-                        id="canvas"
-                        style="display:none;">
-                    </canvas>
-
-                    <!-- Bottom Buttons -->
-                    <div class="scanner-buttons">
-
-                        <button
-                            id="captureBtn"
-                            class="btn btn-primary btn-lg">
-
-                            <i class="bi bi-camera-fill"></i>
-
-                            Capture
-
-                        </button>
-
-                        <button
-                            id="continueBtn"
-                            class="btn btn-success btn-lg">
-
-                            <i class="bi bi-check-circle-fill"></i>
-
-                            Continue
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- =====================
-                 THUMBNAIL PANEL
-            ====================== -->
-
-            <div class="col-lg-3">
-
-                <div class="thumbnail-card">
-
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-
-                        <h5 class="mb-0">
-
-                            <i class="bi bi-images"></i>
-
-                            Pages
-
-                        </h5>
-
-                        <span
-                            id="thumbCounter"
-                            class="badge bg-secondary">
-
-                            0
-
-                        </span>
-
-                    </div>
-
-                    <!-- Thumbnail Container -->
-                    <div
-                        id="thumbnailContainer"
-                        class="thumbnail-container">
-
-                        <!-- JS will insert thumbnails here -->
-
-                    </div>
-
-                    <!-- Add Another Page -->
-                    <button
-                        id="addPageBtn"
-                        class="btn btn-outline-primary w-100 mt-3">
-
-                        <i class="bi bi-plus-circle"></i>
-
-                        Add Scan
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-<!-- END SCANNER SCREEN -->
-<!-- ===========================
-     PREVIEW MODAL
-=========================== -->
-<div class="modal fade"
-     id="previewModal"
-     tabindex="-1"
-     aria-hidden="true">
-
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-
-        <div class="modal-content">
-
-            <!-- Header -->
-            <div class="modal-header">
-
-                <h5 class="modal-title">
-
-                    <i class="bi bi-file-image"></i>
-
-                    Document Preview
-
-                </h5>
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal">
-                </button>
-
-            </div>
-
-            <!-- Body -->
-            <div class="modal-body text-center">
-
-                <img
-                    id="previewImage"
-                    src=""
-                    class="img-fluid rounded shadow"
-                    style="max-height:70vh;">
-
-            </div>
-
-            <!-- Footer -->
-            <div class="modal-footer justify-content-between">
-
-                <div>
-
-                    <button
-                        id="rotateBtn"
-                        class="btn btn-warning">
-
-                        <i class="bi bi-arrow-clockwise"></i>
-
-                        Rotate
-
-                    </button>
-
-                    <button
-                        id="replaceBtn"
-                        class="btn btn-info text-white">
-
-                        <i class="bi bi-arrow-repeat"></i>
-
-                        Replace
-
-                    </button>
-
-                    <button
-                        id="deleteBtn"
-                        class="btn btn-danger">
-
-                        <i class="bi bi-trash-fill"></i>
-
-                        Delete
-
-                    </button>
-
-                </div>
-
-                <button
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal">
-
-                    Close
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-<!-- END PREVIEW MODAL -->
-<!-- ===========================
-     REVIEW SCREEN
-=========================== -->
-<div id="reviewScreen" class="container-fluid py-4" style="display:none;">
-
-    <div class="container">
-
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-
-            <div>
-
-                <h2 class="fw-bold mb-1">
-                    <i class="bi bi-file-earmark-check-fill"></i>
-                    Review Document
-                </h2>
-
-                <small class="text-muted">
-                    Check every page before creating your PDF
-                </small>
-
-            </div>
-
-            <button
-                id="backToScannerBtn"
-                class="btn btn-outline-secondary">
-
-                <i class="bi bi-arrow-left"></i>
-
-                Back
-
-            </button>
-
-        </div>
-
-        <!-- Pages Container -->
-        <div
-            id="reviewContainer"
-            class="row g-4">
-
-            <!--
-                JS will automatically create:
-
-                Page 1
-                Preview
-                Rotate
-                Replace
-                Delete
-            -->
-
-        </div>
-
-        <!-- Bottom Buttons -->
-        <div class="text-center mt-5">
-
-            <button
-                id="createPdfBtn"
-                class="btn btn-success btn-lg px-5">
-
-                <i class="bi bi-file-earmark-pdf-fill"></i>
-
-                Create PDF
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-<!-- END REVIEW SCREEN -->
-<!-- ===========================
-     LOADING OVERLAY
-=========================== -->
-<div id="loadingOverlay" class="loading-overlay" style="display:none;">
-
-    <div class="loading-box">
-
-        <div class="spinner-border text-primary mb-3"
-             role="status">
-        </div>
-
-        <h4 class="mb-2">
-            Preparing PDF...
-        </h4>
-
-        <p class="text-muted mb-3">
-            Please wait...
-        </p>
-
-        <div class="progress">
-
-            <div id="loadingProgress"
-                 class="progress-bar progress-bar-striped progress-bar-animated"
-                 style="width:0%">
-                0%
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-<!-- END LOADING OVERLAY -->
-
-
-<!-- ===========================
-     SUCCESS MODAL
-=========================== -->
-<div class="modal fade"
-     id="successModal"
-     tabindex="-1"
-     aria-hidden="true">
-
-    <div class="modal-dialog modal-dialog-centered">
-
-        <div class="modal-content">
-
-            <div class="modal-body text-center p-5">
-
-                <div class="display-1 text-success mb-3">
-
-                    <i class="bi bi-check-circle-fill"></i>
-
-                </div>
-
-                <h3>
-
-                    PDF Created Successfully
-
-                </h3>
-
-                <p class="text-muted">
-
-                    Your document is now ready.
-
-                </p>
-
-                <button
-                    class="btn btn-success px-5"
-                    data-bs-dismiss="modal">
-
-                    OK
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-<!-- END SUCCESS MODAL -->
-<!-- ===========================
-     JAVASCRIPT LIBRARIES
-=========================== -->
-
-<!-- Bootstrap Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- PDF-LIB -->
-<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-
-<!-- OpenCV -->
-<script async src="https://docs.opencv.org/4.x/opencv.js"></script>
-
-<!-- Main JavaScript -->
-<script src="app.js"></script>
-
-</div>
-<!-- END APP -->
-
-</body>
-</html>
-
-
-
-/* ==========================
-   SCANNER LAYOUT
-========================== */
-
-
-.scanner-card{
-
-    background:white;
-
-    padding:20px;
-
-    border-radius:25px;
-
-    box-shadow:
-    0 15px 40px rgba(0,0,0,.08);
+/* =========================================
+DocPro Scanner V2
+Custom CSS
+========================================= */
+
+:root {
+--docpro-primary: #2563eb;
+--docpro-primary-dark: #1d4ed8;
+--docpro-bg: #f4f7fb;
+--docpro-card: #ffffff;
+--docpro-text: #1f2937;
+--docpro-muted: #6b7280;
+--docpro-border: #e5e7eb;
+--docpro-danger: #dc3545;
+--docpro-success: #198754;
+}
+
+* {
+  box-sizing: border-box;
+  }
+
+body {
+margin: 0;
+padding: 0;
+font-family: "Poppins", sans-serif;
+background: var(--docpro-bg);
+color: var(--docpro-text);
+}
+
+button,
+input {
+font-family: inherit;
+}
+
+/* =========================================
+GENERAL
+========================================= */
+
+#app {
+min-height: 100vh;
+}
+
+.hidden {
+display: none !important;
+}
+
+/* =========================================
+LOGIN SCREEN
+========================================= */
+
+#loginScreen {
+background:
+radial-gradient(circle at top left, rgba(37, 99, 235, 0.15), transparent 35%),
+radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.12), transparent 35%),
+var(--docpro-bg);
+}
+
+.login-card {
+width: 100%;
+max-width: 420px;
+padding: 40px 34px;
+background: rgba(255, 255, 255, 0.96);
+border-radius: 22px;
+border: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.logo-icon {
+width: 72px;
+height: 72px;
+margin: 0 auto 18px;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 20px;
+background: linear-gradient(
+135deg,
+var(--docpro-primary),
+#60a5fa
+);
+color: white;
+font-size: 34px;
+box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25);
+}
+
+.logo-title {
+margin: 0;
+font-size: 30px;
+font-weight: 700;
+letter-spacing: -0.5px;
+}
+
+.logo-subtitle {
+margin-top: 5px;
+color: var(--docpro-muted);
+font-size: 14px;
+}
+
+.logo-by {
+margin-top: 8px;
+color: var(--docpro-primary);
+font-size: 12px;
+font-weight: 600;
+}
+
+#loginScreen .form-label {
+font-size: 13px;
+font-weight: 600;
+color: #374151;
+}
+
+#loginScreen .form-control {
+min-height: 48px;
+border-radius: 12px;
+border: 1px solid var(--docpro-border);
+padding: 10px 14px;
+}
+
+#loginScreen .form-control:focus {
+border-color: var(--docpro-primary);
+box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+#loginBtn {
+min-height: 48px;
+border: none;
+border-radius: 12px;
+font-weight: 600;
+background: var(--docpro-primary);
+transition: 0.2s ease;
+}
+
+#loginBtn:hover {
+background: var(--docpro-primary-dark);
+transform: translateY(-1px);
+}
+
+/* =========================================
+HOME / DASHBOARD
+========================================= */
+
+#homeScreen {
+min-height: 100vh;
+background: var(--docpro-bg);
+}
+
+#homeScreen .container {
+max-width: 1150px;
+}
+
+#homeScreen h3 {
+color: var(--docpro-text);
+}
+
+.dashboard-card {
+height: 100%;
+padding: 28px 22px;
+background: var(--docpro-card);
+border: 1px solid var(--docpro-border);
+border-radius: 18px;
+cursor: pointer;
+text-align: center;
+transition:
+transform 0.2s ease,
+box-shadow 0.2s ease,
+border-color 0.2s ease;
+}
+
+.dashboard-card:hover {
+transform: translateY(-5px);
+border-color: rgba(37, 99, 235, 0.3);
+box-shadow: 0 14px 35px rgba(15, 23, 42, 0.1);
+}
+
+.dashboard-icon {
+width: 64px;
+height: 64px;
+margin: 0 auto 18px;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 18px;
+background: rgba(37, 99, 235, 0.1);
+font-size: 28px;
+}
+
+.dashboard-card h5 {
+margin-bottom: 8px;
+font-weight: 600;
+}
+
+.dashboard-card .text-muted {
+font-size: 13px;
+}
+
+/* =========================================
+SCANNER SCREEN
+========================================= */
+
+#scannerScreen {
+min-height: 100vh;
+background: #111827;
+color: white;
+}
+
+#scannerScreen .container {
+max-width: 1100px;
+}
+
+#scannerScreen h4 {
+font-weight: 600;
+}
+
+#pageCount {
+font-size: 13px;
+}
+
+/* Camera area */
+
+#camera {
+width: 100%;
+max-height: 65vh;
+display: block;
+object-fit: cover;
+background: #000;
+border-radius: 18px;
+}
+
+#canvas {
+display: none;
+}
+
+/* Scanner frame */
+
+.camera-container {
+position: relative;
+width: 100%;
+overflow: hidden;
+border-radius: 18px;
+background: #000;
+}
+
+.scan-frame {
+position: absolute;
+inset: 8%;
+border: 2px dashed rgba(255, 255, 255, 0.85);
+border-radius: 10px;
+pointer-events: none;
+}
+
+.scan-frame::before,
+.scan-frame::after {
+content: "";
+position: absolute;
+width: 28px;
+height: 28px;
+border-color: #fff;
+}
+
+.scan-frame::before {
+top: -2px;
+left: -2px;
+border-top: 4px solid;
+border-left: 4px solid;
+}
+
+.scan-frame::after {
+right: -2px;
+bottom: -2px;
+border-right: 4px solid;
+border-bottom: 4px solid;
+}
+
+/* =========================================
+SCANNER BUTTONS
+========================================= */
+
+#captureBtn {
+width: 76px;
+height: 76px;
+border-radius: 50%;
+border: 5px solid rgba(255, 255, 255, 0.8);
+background: white;
+color: var(--docpro-primary);
+font-size: 28px;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+transition: 0.15s ease;
+}
+
+#captureBtn:hover {
+transform: scale(1.05);
+}
+
+#captureBtn:active {
+transform: scale(0.95);
+}
+
+#continueBtn,
+#addPageBtn {
+border-radius: 10px;
+font-weight: 600;
+}
+
+#thumbCounter {
+font-size: 13px;
+color: rgba(255, 255, 255, 0.75);
+}
+
+/* =========================================
+THUMBNAILS
+========================================= */
+
+#thumbnailContainer {
+display: flex;
+gap: 10px;
+padding: 12px 0;
+overflow-x: auto;
+scrollbar-width: thin;
+}
+
+.thumbnail {
+position: relative;
+flex: 0 0 auto;
+width: 82px;
+height: 105px;
+overflow: hidden;
+border-radius: 8px;
+border: 2px solid rgba(255, 255, 255, 0.25);
+background: #000;
+}
+
+.thumbnail img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+
+.thumbnail.active {
+border-color: var(--docpro-primary);
+}
+
+/* =========================================
+PREVIEW MODAL
+========================================= */
+
+#previewModal .modal-content {
+border: none;
+border-radius: 18px;
+overflow: hidden;
+}
+
+#previewImage {
+width: 100%;
+max-height: 75vh;
+object-fit: contain;
+background: #111;
+}
+
+#rotateBtn,
+#replaceBtn,
+#deleteBtn {
+border-radius: 10px;
+}
+
+/* =========================================
+REVIEW SCREEN
+========================================= */
+
+#reviewScreen {
+min-height: 100vh;
+background: var(--docpro-bg);
+}
+
+#reviewScreen .container {
+max-width: 1100px;
+}
+
+#reviewContainer {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+gap: 18px;
+}
+
+.review-item {
+position: relative;
+overflow: hidden;
+background: white;
+border: 1px solid var(--docpro-border);
+border-radius: 14px;
+box-shadow: 0 5px 18px rgba(15, 23, 42, 0.06);
+}
+
+.review-item img {
+display: block;
+width: 100%;
+height: 240px;
+object-fit: contain;
+background: #f3f4f6;
+}
+
+.review-number {
+padding: 8px 10px;
+font-size: 12px;
+font-weight: 600;
+color: var(--docpro-muted);
+}
+
+/* =========================================
+CREATE PDF BUTTON
+========================================= */
+
+#createPdfBtn {
+min-height: 48px;
+border-radius: 12px;
+font-weight: 600;
+padding: 10px 24px;
+}
+
+/* =========================================
+LOADING OVERLAY
+========================================= */
+
+#loadingOverlay {
+position: fixed;
+inset: 0;
+z-index: 9999;
+display: flex;
+align-items: center;
+justify-content: center;
+background: rgba(17, 24, 39, 0.82);
+backdrop-filter: blur(5px);
+}
+
+#loadingOverlay .loading-box {
+width: min(90%, 400px);
+padding: 30px;
+text-align: center;
+background: white;
+border-radius: 18px;
+}
+
+#loadingProgress {
+font-size: 14px;
+color: var(--docpro-muted);
+}
+
+/* =========================================
+SUCCESS MODAL
+========================================= */
+
+#successModal .modal-content {
+border: none;
+border-radius: 18px;
+}
+
+#successModal .modal-body {
+padding: 35px 25px;
+text-align: center;
+}
+
+/* =========================================
+MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+```
+.login-card {
+    max-width: 92%;
+    padding: 30px 22px;
+    border-radius: 18px;
+}
+
+.logo-title {
+    font-size: 26px;
+}
+
+#camera {
+    max-height: 58vh;
+    border-radius: 12px;
+}
+
+.scan-frame {
+    inset: 6%;
+}
+
+#captureBtn {
+    width: 68px;
+    height: 68px;
+    font-size: 24px;
+}
+
+#reviewContainer {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.review-item img {
+    height: 190px;
+}
+```
 
 }
 
+@media (max-width: 480px) {
 
+```
+.login-card {
+    padding: 26px 18px;
+}
 
-.camera-wrapper{
+.logo-icon {
+    width: 62px;
+    height: 62px;
+    font-size: 28px;
+}
 
-    position:relative;
+.logo-title {
+    font-size: 23px;
+}
 
-    width:100%;
+#reviewContainer {
+    grid-template-columns: 1fr 1fr;
+}
 
-    height:65vh;
-
-    min-height:400px;
-
-    background:#111827;
-
-    border-radius:20px;
-
-    overflow:hidden;
+.review-item img {
+    height: 165px;
+}
+```
 
 }
 
+/* =========================================
+TOUCH / MOBILE UX
+========================================= */
 
-
-#camera{
-
-    width:100%;
-
-    height:100%;
-
-    object-fit:cover;
-
+button,
+.dashboard-card {
+-webkit-tap-highlight-color: transparent;
 }
 
-
-
-/* ==========================
-   CAMERA OVERLAY
-========================== */
-
-
-.camera-overlay{
-
-    position:absolute;
-
-    inset:0;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    pointer-events:none;
-
+@media (hover: none) {
+.dashboard-card:hover {
+transform: none;
+box-shadow: none;
+}
 }
 
+/* =========================================
+SCROLLBAR
+========================================= */
 
-
-.scan-frame{
-
-    width:75%;
-
-    height:70%;
-
-    border:3px solid rgba(255,255,255,.8);
-
-    border-radius:15px;
-
-    box-shadow:
-
-    0 0 0 9999px rgba(0,0,0,.25);
-
+::-webkit-scrollbar {
+width: 7px;
+height: 7px;
 }
 
-
-
-/* ==========================
-   SCANNER BUTTONS
-========================== */
-
-
-.scanner-buttons{
-
-    display:flex;
-
-    justify-content:center;
-
-    gap:15px;
-
-    margin-top:20px;
-
+::-webkit-scrollbar-track {
+background: transparent;
 }
 
-
-
-.scanner-buttons button{
-
-    min-width:160px;
-
-    padding:14px 25px;
-
+::-webkit-scrollbar-thumb {
+background: #cbd5e1;
+border-radius: 20px;
 }
 
-
-
-/* ==========================
-   THUMBNAIL PANEL
-========================== */
-
-
-.thumbnail-card{
-
-    background:white;
-
-    padding:20px;
-
-    border-radius:20px;
-
-    height:65vh;
-
-    overflow:hidden;
-
+::-webkit-scrollbar-thumb:hover {
+background: #94a3b8;
 }
-
-
-
-.thumbnail-container{
-
-    height:calc(65vh - 120px);
-
-    overflow-y:auto;
-
-    padding-right:5px;
-
-}
-
-
-
-/* Scrollbar */
-
-.thumbnail-container::-webkit-scrollbar{
-
-    width:6px;
-
-}
-
-
-.thumbnail-container::-webkit-scrollbar-thumb{
-
-    background:#cbd5e1;
-
-    border-radius:10px;
-
-}
-
-
-
-/* ==========================
-   THUMBNAIL ITEM
-========================== */
-
-
-.thumbnail-item{
-
-    position:relative;
-
-    margin-bottom:15px;
-
-    cursor:pointer;
-
-}
-
-
-
-.thumbnail-item img{
-
-    width:100%;
-
-    height:120px;
-
-    object-fit:cover;
-
-    border-radius:12px;
-
-    border:2px solid transparent;
-
-    transition:.2s;
-
-}
-
-
-
-.thumbnail-item:hover img{
-
-    border-color:#2563eb;
-
-}
-
-
-
-.thumbnail-number{
-
-    position:absolute;
-
-    top:8px;
-
-    left:8px;
-
-    background:#2563eb;
-
-    color:white;
-
-    font-size:12px;
-
-    padding:4px 8px;
-
-    border-radius:20px;
-
-}
-
-
-
-/* ==========================
-   ADD SCAN BUTTON
-========================== */
-
-
-#addPageBtn{
-
-    height:45px;
-
-    border-radius:12px;
-
-}
-
-
-
-/* ==========================
-   BADGES
-========================== */
-
-
-.badge{
-
-    border-radius:20px;
-
-}
-
-
-
-/* ==========================
-   BUTTON EFFECT
-========================== */
-
-
-.btn{
-
-    transition:.2s;
-
-}
-
-
-
-.btn:hover{
-
-    transform:translateY(-2px);
-
-}
-
-
-
-/* ==========================================
-   DOCPRO SCANNER V2
-   STYLE.CSS PART 3/3
-========================================== */
-
-
-/* ==========================
-   PREVIEW MODAL
-========================== */
-
-
-#previewModal .modal-content{
-
-    border-radius:25px;
-
-    overflow:hidden;
-
-}
-
-
-
-#previewImage{
-
-    max-width:100%;
-
-    object-fit:contain;
-
-    border-radius:15px;
-
-}
-
-
-
-/* ==========================
-   REVIEW SCREEN
-========================== */
-
-
-#reviewScreen{
-
-    min-height:100vh;
-
-}
-
-
-
-.review-card{
-
-    background:white;
-
-    border-radius:20px;
-
-    padding:20px;
-
-    box-shadow:
-    0 10px 30px rgba(0,0,0,.08);
-
-}
-
-
-
-.review-card img{
-
-    width:100%;
-
-    height:350px;
-
-    object-fit:contain;
-
-    background:#f3f4f6;
-
-    border-radius:15px;
-
-}
-
-
-
-/* Review Buttons */
-
-.review-card .btn{
-
-    margin:5px;
-
-}
-
-
-
-/* ==========================
-   LOADING OVERLAY
-========================== */
-
-
-.loading-overlay{
-
-    position:fixed;
-
-    inset:0;
-
-    background:rgba(0,0,0,.55);
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    z-index:9999;
-
-}
-
-
-
-.loading-box{
-
-    width:350px;
-
-    background:white;
-
-    padding:35px;
-
-    border-radius:25px;
-
-    text-align:center;
-
-    box-shadow:
-
-    0 20px 60px rgba(0,0,0,.2);
-
-}
-
-
-
-.progress{
-
-    height:12px;
-
-    border-radius:20px;
-
-    overflow:hidden;
-
-}
-
-
-
-/* ==========================
-   SUCCESS MODAL
-========================== */
-
-
-#successModal .modal-content{
-
-    border-radius:25px;
-
-}
-
-
-
-#successModal .display-1{
-
-    font-size:80px;
-
-}
-
-
-
-/* ==========================
-   ANIMATION
-========================== */
-
-
-@keyframes fadeIn{
-
-    from{
-
-        opacity:0;
-
-        transform:translateY(20px);
-
-    }
-
-
-    to{
-
-        opacity:1;
-
-        transform:translateY(0);
-
-    }
-
-}
-
-
-
-.login-card,
-.dashboard-card,
-.scanner-card,
-.thumbnail-card{
-
-    animation:fadeIn .4s ease;
-
-}
-
-
-
-/* ==========================
-   MOBILE RESPONSIVE
-========================== */
-
-
-@media(max-width:768px){
-
-
-    .login-card{
-
-        width:90%;
-
-        padding:30px;
-
-    }
-
-
-
-    .camera-wrapper{
-
-        height:55vh;
-
-        min-height:300px;
-
-    }
-
-
-
-    .thumbnail-card{
-
-        height:auto;
-
-        margin-top:15px;
-
-    }
-
-
-
-    .thumbnail-container{
-
-        height:auto;
-
-        max-height:300px;
-
-    }
-
-
-
-    .scanner-buttons{
-
-        flex-direction:column;
-
-    }
-
-
-
-    .scanner-buttons button{
-
-        width:100%;
-
-    }
-
-
-
-    .logo-title{
-
-        font-size:30px;
-
-    }
-
-
-}
-
-
-
-/* ==========================
-   SMALL PHONE
-========================== */
-
-
-@media(max-width:480px){
-
-
-    .camera-wrapper{
-
-        height:45vh;
-
-    }
-
-
-
-    .scan-frame{
-
-        width:85%;
-
-        height:60%;
-
-    }
-
-
-
-    .dashboard-card{
-
-        padding:20px;
-
-    }
-
-
-}
-
-
-/* END STYLE.CSS */
