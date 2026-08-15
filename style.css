@@ -587,7 +587,7 @@ REVIEW SCREEN
 CREATE PDF BUTTON
 ========================================= */
 
-#createPdfBtn {
+#uploadDriveBtn {
 min-height: 48px;
 border-radius: 12px;
 font-weight: 600;
