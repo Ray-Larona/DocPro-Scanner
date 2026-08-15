@@ -366,181 +366,111 @@ document
 
 
 /* ==========================
-   CAPTURE HELPERS
+HIGH RESOLUTION CAPTURE
 ========================== */
 
-/*
- * IMPORTANT:
- * The camera preview uses CSS object-fit: cover.
- * We therefore calculate the visible video area and
- * map the scan-frame rectangle back to the real video pixels.
- *
- * For now we capture from the VIDEO element instead of
- * ImageCapture.takePhoto(). This guarantees that the saved
- * image matches exactly what the user sees inside the frame.
- * We can add a true high-resolution still pipeline later.
- */
+async async function capturePhoto(){
 
-function getScanCrop(){
-
-    if(!camera.videoWidth || !camera.videoHeight){
-        throw new Error("Camera video dimensions are not ready.");
-    }
-
-    const videoRect = camera.getBoundingClientRect();
-    const frame = document.querySelector(".scan-frame");
-
-    if(!frame || !videoRect.width || !videoRect.height){
-        throw new Error("Scan frame is not available.");
-    }
-
-    const frameRect = frame.getBoundingClientRect();
-
-    const videoW = camera.videoWidth;
-    const videoH = camera.videoHeight;
-
-    const videoAspect = videoW / videoH;
-    const boxAspect = videoRect.width / videoRect.height;
-
-    let renderedW;
-    let renderedH;
-    let offsetX = 0;
-    let offsetY = 0;
-
-    /*
-     * object-fit: cover means the video is scaled until the
-     * entire camera box is filled, then the excess is cropped.
-     */
-    if(videoAspect > boxAspect){
-
-        renderedH = videoRect.height;
-        renderedW = renderedH * videoAspect;
-
-        offsetX = (renderedW - videoRect.width) / 2;
-
-    }else{
-
-        renderedW = videoRect.width;
-        renderedH = renderedW / videoAspect;
-
-        offsetY = (renderedH - videoRect.height) / 2;
-
-    }
-
-    const fx = frameRect.left - videoRect.left;
-    const fy = frameRect.top - videoRect.top;
-
-    let sx = (fx + offsetX) * (videoW / renderedW);
-    let sy = (fy + offsetY) * (videoH / renderedH);
-
-    let sw = frameRect.width * (videoW / renderedW);
-    let sh = frameRect.height * (videoH / renderedH);
-
-    /*
-     * Clamp crop to the real video dimensions.
-     */
-    sx = Math.max(0, Math.min(videoW - 1, sx));
-    sy = Math.max(0, Math.min(videoH - 1, sy));
-
-    sw = Math.max(1, Math.min(videoW - sx, sw));
-    sh = Math.max(1, Math.min(videoH - sy, sh));
-
-    return {
-        sx,
-        sy,
-        sw,
-        sh
-    };
-
-}
-
-
-/* ==========================
-   CAPTURE PHOTO
-   CAPTURES ONLY THE SCAN FRAME
-========================== */
-
-async function capturePhoto(){
-
-    if(!cameraStream){
-        alert("Camera not ready");
+    if(!cameraStream || !camera || !camera.videoWidth || !camera.videoHeight){
+        alert("Camera not ready. Please wait for the camera preview.");
         return;
     }
 
-    if(!camera.videoWidth || !camera.videoHeight){
-        alert("Camera is still starting. Please wait a moment.");
+    const frame = document.querySelector(".scan-frame");
+
+    if(!frame){
+        alert("Scan frame not found.");
         return;
     }
 
     try{
-
-        const crop = getScanCrop();
-
         /*
          * Capture directly from the live video.
-         * This is intentionally used instead of ImageCapture.takePhoto()
-         * because ImageCapture may return a still with a different
-         * orientation/aspect ratio on mobile devices.
-         *
-         * The crop is therefore guaranteed to correspond to the
-         * dashed frame the user sees.
+         * This avoids ImageCapture.takePhoto(), whose native photo
+         * dimensions/aspect ratio can differ from the visible preview.
          */
 
-        canvas.width = Math.round(crop.sw);
-        canvas.height = Math.round(crop.sh);
+        const videoRect = camera.getBoundingClientRect();
+        const frameRect = frame.getBoundingClientRect();
 
-        const ctx = canvas.getContext("2d", {
-            alpha:false
-        });
+        const vw = camera.videoWidth;
+        const vh = camera.videoHeight;
+
+        if(videoRect.width <= 0 || videoRect.height <= 0){
+            throw new Error("Camera preview has no visible size.");
+        }
+
+        /*
+         * The video uses object-fit: cover. Work out which part of the
+         * native camera frame is actually visible in the HTML video.
+         */
+        const scale = Math.max(
+            videoRect.width / vw,
+            videoRect.height / vh
+        );
+
+        const renderedWidth = vw * scale;
+        const renderedHeight = vh * scale;
+
+        const sourceOffsetX = (renderedWidth - videoRect.width) / 2;
+        const sourceOffsetY = (renderedHeight - videoRect.height) / 2;
+
+        let sx =
+            ((frameRect.left - videoRect.left) + sourceOffsetX) / scale;
+
+        let sy =
+            ((frameRect.top - videoRect.top) + sourceOffsetY) / scale;
+
+        let sw = frameRect.width / scale;
+        let sh = frameRect.height / scale;
+
+        /*
+         * Clamp the crop so drawImage never receives an invalid rectangle.
+         */
+        sx = Math.max(0, Math.min(sx, vw - 1));
+        sy = Math.max(0, Math.min(sy, vh - 1));
+        sw = Math.max(1, Math.min(sw, vw - sx));
+        sh = Math.max(1, Math.min(sh, vh - sy));
+
+        /*
+         * Render at the native crop resolution.
+         */
+        canvas.width = Math.round(sw);
+        canvas.height = Math.round(sh);
+
+        const ctx = canvas.getContext("2d", {alpha:false});
 
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = "high";
 
         ctx.drawImage(
             camera,
-            crop.sx,
-            crop.sy,
-            crop.sw,
-            crop.sh,
-            0,
-            0,
-            canvas.width,
-            canvas.height
+            sx, sy, sw, sh,
+            0, 0, canvas.width, canvas.height
         );
 
-        const dataUrl = canvas.toDataURL(
-            "image/jpeg",
-            0.98
+        pendingImage = canvas.toDataURL("image/jpeg", 0.95);
+        currentPreviewIndex = null;
+
+        document.getElementById("previewImage").src = pendingImage;
+        document.getElementById("saveBtn").style.display = "inline-block";
+        document.getElementById("deleteBtn").style.display = "inline-block";
+
+        const modal = new bootstrap.Modal(
+            document.getElementById("previewModal")
         );
 
-        console.log(
-            "FRAME CAPTURE:",
-            {
-                videoWidth: camera.videoWidth,
-                videoHeight: camera.videoHeight,
-                cropX: Math.round(crop.sx),
-                cropY: Math.round(crop.sy),
-                cropWidth: Math.round(crop.sw),
-                cropHeight: Math.round(crop.sh)
-            }
-        );
+        modal.show();
 
-        showCapturedImage(dataUrl);
+        console.log("Scan frame captured:", {
+            source: {x:sx, y:sy, width:sw, height:sh},
+            output: {width:canvas.width, height:canvas.height}
+        });
 
+    }catch(error){
+        console.error("Scan frame capture failed:", error);
+        alert("Unable to capture the scan frame. Please try again.");
     }
-    catch(error){
-
-        console.error(
-            "Frame capture failed:",
-            error
-        );
-
-        alert(
-            "Unable to capture the scan frame. Please try again."
-        );
-
-    }
-
 }
 
 /* ==========================================
@@ -1126,162 +1056,127 @@ document
 "click",
 async function(){
 
-
-
-    if(capturedImages.length===0){
-
+    if(capturedImages.length === 0){
+        alert("No scanned pages to upload.");
         return;
-
     }
 
+    const uploadUrl =
+        window.DOCPRO_GOOGLE_APPS_SCRIPT_URL ||
+        "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
 
+    if(uploadUrl.includes("PASTE_YOUR")){
+        alert("Google Drive is not connected yet. Add your Apps Script Web App URL in app.js.");
+        return;
+    }
 
     showLoading();
 
+    try{
 
+        const pdfDoc =
+            await PDFLib.PDFDocument.create();
 
-    const pdfDoc =
-    await PDFLib.PDFDocument.create();
+        for(const imageData of capturedImages){
 
+            const jpgImage =
+                await pdfDoc.embedJpg(imageData);
 
+            const page =
+                pdfDoc.addPage([
+                    jpgImage.width,
+                    jpgImage.height
+                ]);
 
+            page.drawImage(
+                jpgImage,
+                {
+                    x:0,
+                    y:0,
+                    width:jpgImage.width,
+                    height:jpgImage.height
+                }
+            );
+        }
 
-    for(
-        let imageData of capturedImages
-    ){
+        const pdfBytes =
+            await pdfDoc.save();
 
+        const base64 =
+            arrayBufferToBase64(pdfBytes);
 
+        const fileName =
+            "DocPro-" +
+            new Date().toISOString().replace(/[:.]/g,"-") +
+            ".pdf";
 
-        let jpgImage =
-        await pdfDoc.embedJpg(
-            imageData
+        const response =
+            await fetch(
+                uploadUrl,
+                {
+                    method:"POST",
+                    headers:{
+                        "Content-Type":"text/plain;charset=utf-8"
+                    },
+                    body:JSON.stringify({
+                        fileName:fileName,
+                        mimeType:"application/pdf",
+                        data:base64
+                    })
+                }
+            );
+
+        let result = null;
+
+        try{
+            result = await response.json();
+        }catch(e){
+            /* Some Apps Script/browser combinations return an opaque response. */
+        }
+
+        if(result && result.success === false){
+            throw new Error(result.error || "Google Drive upload failed.");
+        }
+
+        alert("Uploaded to Google Drive successfully.");
+
+    }catch(error){
+
+        console.error("Google Drive upload failed:", error);
+
+        alert(
+            "Unable to upload to Google Drive.\n\n" +
+            (error.message || error)
         );
 
-
-
-        let page =
-        pdfDoc.addPage();
-
-
-
-        let size =
-        jpgImage.scaleToFit(
-            page.getWidth(),
-            page.getHeight()
-        );
-
-
-
-        page.drawImage(
-            jpgImage,
-            {
-
-                x:
-                (page.getWidth()-size.width)/2,
-
-
-                y:
-                (page.getHeight()-size.height)/2,
-
-
-                width:
-                size.width,
-
-
-                height:
-                size.height
-
-            }
-        );
-
-
+    }finally{
+        hideLoading();
     }
-
-
-
-
-    let pdfBytes =
-    await pdfDoc.save();
-
-
-
-
-    downloadPDF(
-        pdfBytes
-    );
-
-
-
-    hideLoading();
-
-
 
 });
 
+function arrayBufferToBase64(buffer){
 
+    const bytes = new Uint8Array(buffer);
+    const chunkSize = 0x8000;
+    let binary = "";
 
+    for(let i=0; i<bytes.length; i+=chunkSize){
+        binary += String.fromCharCode.apply(
+            null,
+            bytes.subarray(i, i + chunkSize)
+        );
+    }
 
-
-/* ==========================
-   PDF DOWNLOAD
-========================== */
-
-
-function downloadPDF(bytes){
-
-
-    let blob =
-    new Blob(
-        [bytes],
-        {
-            type:
-            "application/pdf"
-        }
-    );
-
-
-
-    let url =
-    URL.createObjectURL(
-        blob
-    );
-
-
-
-    let link =
-    document.createElement(
-        "a"
-    );
-
-
-    link.href=url;
-
-
-    link.download =
-    "DocPro-Document.pdf";
-
-
-
-    link.click();
-
-
-
-    URL
-    .revokeObjectURL(
-        url
-    );
-
-
-
+    return btoa(binary);
 }
-
-
-
 
 
 /* ==========================
    LOADING
 ========================== */
+
+
 
 
 function showLoading(){
