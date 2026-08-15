@@ -366,218 +366,91 @@ document
 
 
 /* ==========================
-HIGH RESOLUTION CAPTURE
+   CAPTURE HELPERS
 ========================== */
 
-async function cropBlobToScanFrame(blob){
+/*
+ * IMPORTANT:
+ * The camera preview uses CSS object-fit: cover.
+ * We therefore calculate the visible video area and
+ * map the scan-frame rectangle back to the real video pixels.
+ *
+ * For now we capture from the VIDEO element instead of
+ * ImageCapture.takePhoto(). This guarantees that the saved
+ * image matches exactly what the user sees inside the frame.
+ * We can add a true high-resolution still pipeline later.
+ */
 
-    return new Promise(function(resolve, reject){
+function getScanCrop(){
 
-        const image = new Image();
+    if(!camera.videoWidth || !camera.videoHeight){
+        throw new Error("Camera video dimensions are not ready.");
+    }
 
-        image.onload = function(){
+    const videoRect = camera.getBoundingClientRect();
+    const frame = document.querySelector(".scan-frame");
 
-            try{
+    if(!frame || !videoRect.width || !videoRect.height){
+        throw new Error("Scan frame is not available.");
+    }
 
-                const videoRect = camera.getBoundingClientRect();
-                const frame = document.querySelector(".scan-frame");
+    const frameRect = frame.getBoundingClientRect();
 
-                if(!frame || !videoRect.width || !videoRect.height){
+    const videoW = camera.videoWidth;
+    const videoH = camera.videoHeight;
 
-                    resolve(blob);
-                    return;
+    const videoAspect = videoW / videoH;
+    const boxAspect = videoRect.width / videoRect.height;
 
-                }
+    let renderedW;
+    let renderedH;
+    let offsetX = 0;
+    let offsetY = 0;
 
-                const frameRect = frame.getBoundingClientRect();
+    /*
+     * object-fit: cover means the video is scaled until the
+     * entire camera box is filled, then the excess is cropped.
+     */
+    if(videoAspect > boxAspect){
 
-                /*
-                 * The video uses object-fit: cover.
-                 * Work out which part of the real video is visible
-                 * inside the displayed camera element, then map the
-                 * scan frame onto the real image.
-                 */
+        renderedH = videoRect.height;
+        renderedW = renderedH * videoAspect;
 
-                const videoW = camera.videoWidth;
-                const videoH = camera.videoHeight;
+        offsetX = (renderedW - videoRect.width) / 2;
 
-                const videoAspect = videoW / videoH;
-                const boxAspect = videoRect.width / videoRect.height;
+    }else{
 
-                let renderedW;
-                let renderedH;
-                let offsetX;
-                let offsetY;
+        renderedW = videoRect.width;
+        renderedH = renderedW / videoAspect;
 
-                if(videoAspect > boxAspect){
+        offsetY = (renderedH - videoRect.height) / 2;
 
-                    // Video is wider than the camera box.
-                    renderedH = videoRect.height;
-                    renderedW = renderedH * videoAspect;
+    }
 
-                    offsetX = (renderedW - videoRect.width) / 2;
-                    offsetY = 0;
+    const fx = frameRect.left - videoRect.left;
+    const fy = frameRect.top - videoRect.top;
 
-                }else{
+    let sx = (fx + offsetX) * (videoW / renderedW);
+    let sy = (fy + offsetY) * (videoH / renderedH);
 
-                    // Video is taller than the camera box.
-                    renderedW = videoRect.width;
-                    renderedH = renderedW / videoAspect;
+    let sw = frameRect.width * (videoW / renderedW);
+    let sh = frameRect.height * (videoH / renderedH);
 
-                    offsetX = 0;
-                    offsetY = (renderedH - videoRect.height) / 2;
+    /*
+     * Clamp crop to the real video dimensions.
+     */
+    sx = Math.max(0, Math.min(videoW - 1, sx));
+    sy = Math.max(0, Math.min(videoH - 1, sy));
 
-                }
+    sw = Math.max(1, Math.min(videoW - sx, sw));
+    sh = Math.max(1, Math.min(videoH - sy, sh));
 
-                // Frame position relative to the displayed camera box.
-                const fx = frameRect.left - videoRect.left;
-                const fy = frameRect.top - videoRect.top;
-
-                // Convert displayed pixels to actual video pixels.
-                let sx =
-                    (fx + offsetX) *
-                    (videoW / renderedW);
-
-                let sy =
-                    (fy + offsetY) *
-                    (videoH / renderedH);
-
-                let sw =
-                    frameRect.width *
-                    (videoW / renderedW);
-
-                let sh =
-                    frameRect.height *
-                    (videoH / renderedH);
-
-                // Clamp to the actual image.
-                sx = Math.max(0, Math.min(videoW, sx));
-                sy = Math.max(0, Math.min(videoH, sy));
-                sw = Math.min(sw, videoW - sx);
-                sh = Math.min(sh, videoH - sy);
-
-                if(sw <= 1 || sh <= 1){
-
-                    resolve(blob);
-                    return;
-
-                }
-
-                /*
-                 * The ImageCapture photo can have a different resolution
-                 * from the video preview. Map the same normalized crop
-                 * onto the high-resolution photo.
-                 */
-
-                const scaleX = image.naturalWidth / videoW;
-                const scaleY = image.naturalHeight / videoH;
-
-                const sourceX = sx * scaleX;
-                const sourceY = sy * scaleY;
-                const sourceW = sw * scaleX;
-                const sourceH = sh * scaleY;
-
-                const outputCanvas =
-                    document.createElement("canvas");
-
-                outputCanvas.width =
-                    Math.max(1, Math.round(sourceW));
-
-                outputCanvas.height =
-                    Math.max(1, Math.round(sourceH));
-
-                const ctx =
-                    outputCanvas.getContext("2d", {
-                        alpha:false
-                    });
-
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = "high";
-
-                ctx.drawImage(
-                    image,
-                    sourceX,
-                    sourceY,
-                    sourceW,
-                    sourceH,
-                    0,
-                    0,
-                    outputCanvas.width,
-                    outputCanvas.height
-                );
-
-                outputCanvas.toBlob(
-                    function(croppedBlob){
-
-                        if(croppedBlob){
-
-                            resolve(croppedBlob);
-
-                        }else{
-
-                            reject(
-                                new Error("Unable to create cropped image.")
-                            );
-
-                        }
-
-                    },
-                    "image/jpeg",
-                    0.98
-                );
-
-            }
-            catch(error){
-
-                reject(error);
-
-            }
-
-        };
-
-        image.onerror = function(){
-
-            reject(
-                new Error("Unable to read captured image.")
-            );
-
-        };
-
-        image.src = URL.createObjectURL(blob);
-
-    });
-
-}
-
-
-/* ==========================
-   SHOW CAPTURED IMAGE
-========================== */
-
-function showCapturedImage(dataUrl){
-
-    pendingImage = dataUrl;
-
-    currentPreviewIndex = null;
-
-    document
-    .getElementById("previewImage")
-    .src = pendingImage;
-
-    document
-    .getElementById("saveBtn")
-    .style.display = "inline-block";
-
-    document
-    .getElementById("deleteBtn")
-    .style.display = "inline-block";
-
-    const modal =
-        new bootstrap.Modal(
-            document.getElementById("previewModal")
-        );
-
-    modal.show();
+    return {
+        sx,
+        sy,
+        sw,
+        sh
+    };
 
 }
 
@@ -590,187 +463,83 @@ function showCapturedImage(dataUrl){
 async function capturePhoto(){
 
     if(!cameraStream){
-
         alert("Camera not ready");
-
         return;
-
     }
 
-    const track =
-        cameraStream.getVideoTracks()[0];
-
-    if(!track){
-
-        alert("Camera track not available");
-
+    if(!camera.videoWidth || !camera.videoHeight){
+        alert("Camera is still starting. Please wait a moment.");
         return;
-
     }
 
-    /*
-     * First try ImageCapture for the highest available
-     * still-photo resolution.
-     */
+    try{
 
-    if(typeof ImageCapture !== "undefined"){
+        const crop = getScanCrop();
 
-        try{
+        /*
+         * Capture directly from the live video.
+         * This is intentionally used instead of ImageCapture.takePhoto()
+         * because ImageCapture may return a still with a different
+         * orientation/aspect ratio on mobile devices.
+         *
+         * The crop is therefore guaranteed to correspond to the
+         * dashed frame the user sees.
+         */
 
-            const imageCapture =
-                new ImageCapture(track);
+        canvas.width = Math.round(crop.sw);
+        canvas.height = Math.round(crop.sh);
 
-            console.log(
-                "Taking high-resolution photo..."
-            );
-
-            const fullBlob =
-                await imageCapture.takePhoto();
-
-            const croppedBlob =
-                await cropBlobToScanFrame(fullBlob);
-
-            const reader =
-                new FileReader();
-
-            reader.onload = function(){
-
-                showCapturedImage(
-                    reader.result
-                );
-
-            };
-
-            reader.readAsDataURL(croppedBlob);
-
-            console.log(
-                "Scan-frame photo captured:",
-                croppedBlob.size,
-                "bytes"
-            );
-
-            return;
-
-        }
-        catch(error){
-
-            console.warn(
-                "High-resolution frame capture failed. Using video fallback.",
-                error
-            );
-
-        }
-
-    }
-
-
-    /* ==========================
-       FALLBACK CAPTURE
-       ========================== */
-
-    if(!camera.videoWidth){
-
-        alert("Camera not ready");
-
-        return;
-
-    }
-
-    const videoW = camera.videoWidth;
-    const videoH = camera.videoHeight;
-
-    const videoRect = camera.getBoundingClientRect();
-    const frame = document.querySelector(".scan-frame");
-
-    if(!frame){
-
-        alert("Scan frame not found");
-
-        return;
-
-    }
-
-    const frameRect = frame.getBoundingClientRect();
-
-    const videoAspect = videoW / videoH;
-    const boxAspect = videoRect.width / videoRect.height;
-
-    let renderedW;
-    let renderedH;
-    let offsetX;
-    let offsetY;
-
-    if(videoAspect > boxAspect){
-
-        renderedH = videoRect.height;
-        renderedW = renderedH * videoAspect;
-
-        offsetX = (renderedW - videoRect.width) / 2;
-        offsetY = 0;
-
-    }else{
-
-        renderedW = videoRect.width;
-        renderedH = renderedW / videoAspect;
-
-        offsetX = 0;
-        offsetY = (renderedH - videoRect.height) / 2;
-
-    }
-
-    const fx = frameRect.left - videoRect.left;
-    const fy = frameRect.top - videoRect.top;
-
-    let sx =
-        (fx + offsetX) *
-        (videoW / renderedW);
-
-    let sy =
-        (fy + offsetY) *
-        (videoH / renderedH);
-
-    let sw =
-        frameRect.width *
-        (videoW / renderedW);
-
-    let sh =
-        frameRect.height *
-        (videoH / renderedH);
-
-    sx = Math.max(0, Math.min(videoW, sx));
-    sy = Math.max(0, Math.min(videoH, sy));
-    sw = Math.min(sw, videoW - sx);
-    sh = Math.min(sh, videoH - sy);
-
-    canvas.width = Math.round(sw);
-    canvas.height = Math.round(sh);
-
-    const ctx =
-        canvas.getContext("2d", {
+        const ctx = canvas.getContext("2d", {
             alpha:false
         });
 
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
 
-    ctx.drawImage(
-        camera,
-        sx,
-        sy,
-        sw,
-        sh,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+        ctx.drawImage(
+            camera,
+            crop.sx,
+            crop.sy,
+            crop.sw,
+            crop.sh,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
 
-    showCapturedImage(
-        canvas.toDataURL(
+        const dataUrl = canvas.toDataURL(
             "image/jpeg",
             0.98
-        )
-    );
+        );
+
+        console.log(
+            "FRAME CAPTURE:",
+            {
+                videoWidth: camera.videoWidth,
+                videoHeight: camera.videoHeight,
+                cropX: Math.round(crop.sx),
+                cropY: Math.round(crop.sy),
+                cropWidth: Math.round(crop.sw),
+                cropHeight: Math.round(crop.sh)
+            }
+        );
+
+        showCapturedImage(dataUrl);
+
+    }
+    catch(error){
+
+        console.error(
+            "Frame capture failed:",
+            error
+        );
+
+        alert(
+            "Unable to capture the scan frame. Please try again."
+        );
+
+    }
 
 }
 
