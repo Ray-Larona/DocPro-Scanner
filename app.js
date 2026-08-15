@@ -369,6 +369,224 @@ document
 HIGH RESOLUTION CAPTURE
 ========================== */
 
+async function cropBlobToScanFrame(blob){
+
+    return new Promise(function(resolve, reject){
+
+        const image = new Image();
+
+        image.onload = function(){
+
+            try{
+
+                const videoRect = camera.getBoundingClientRect();
+                const frame = document.querySelector(".scan-frame");
+
+                if(!frame || !videoRect.width || !videoRect.height){
+
+                    resolve(blob);
+                    return;
+
+                }
+
+                const frameRect = frame.getBoundingClientRect();
+
+                /*
+                 * The video uses object-fit: cover.
+                 * Work out which part of the real video is visible
+                 * inside the displayed camera element, then map the
+                 * scan frame onto the real image.
+                 */
+
+                const videoW = camera.videoWidth;
+                const videoH = camera.videoHeight;
+
+                const videoAspect = videoW / videoH;
+                const boxAspect = videoRect.width / videoRect.height;
+
+                let renderedW;
+                let renderedH;
+                let offsetX;
+                let offsetY;
+
+                if(videoAspect > boxAspect){
+
+                    // Video is wider than the camera box.
+                    renderedH = videoRect.height;
+                    renderedW = renderedH * videoAspect;
+
+                    offsetX = (renderedW - videoRect.width) / 2;
+                    offsetY = 0;
+
+                }else{
+
+                    // Video is taller than the camera box.
+                    renderedW = videoRect.width;
+                    renderedH = renderedW / videoAspect;
+
+                    offsetX = 0;
+                    offsetY = (renderedH - videoRect.height) / 2;
+
+                }
+
+                // Frame position relative to the displayed camera box.
+                const fx = frameRect.left - videoRect.left;
+                const fy = frameRect.top - videoRect.top;
+
+                // Convert displayed pixels to actual video pixels.
+                let sx =
+                    (fx + offsetX) *
+                    (videoW / renderedW);
+
+                let sy =
+                    (fy + offsetY) *
+                    (videoH / renderedH);
+
+                let sw =
+                    frameRect.width *
+                    (videoW / renderedW);
+
+                let sh =
+                    frameRect.height *
+                    (videoH / renderedH);
+
+                // Clamp to the actual image.
+                sx = Math.max(0, Math.min(videoW, sx));
+                sy = Math.max(0, Math.min(videoH, sy));
+                sw = Math.min(sw, videoW - sx);
+                sh = Math.min(sh, videoH - sy);
+
+                if(sw <= 1 || sh <= 1){
+
+                    resolve(blob);
+                    return;
+
+                }
+
+                /*
+                 * The ImageCapture photo can have a different resolution
+                 * from the video preview. Map the same normalized crop
+                 * onto the high-resolution photo.
+                 */
+
+                const scaleX = image.naturalWidth / videoW;
+                const scaleY = image.naturalHeight / videoH;
+
+                const sourceX = sx * scaleX;
+                const sourceY = sy * scaleY;
+                const sourceW = sw * scaleX;
+                const sourceH = sh * scaleY;
+
+                const outputCanvas =
+                    document.createElement("canvas");
+
+                outputCanvas.width =
+                    Math.max(1, Math.round(sourceW));
+
+                outputCanvas.height =
+                    Math.max(1, Math.round(sourceH));
+
+                const ctx =
+                    outputCanvas.getContext("2d", {
+                        alpha:false
+                    });
+
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = "high";
+
+                ctx.drawImage(
+                    image,
+                    sourceX,
+                    sourceY,
+                    sourceW,
+                    sourceH,
+                    0,
+                    0,
+                    outputCanvas.width,
+                    outputCanvas.height
+                );
+
+                outputCanvas.toBlob(
+                    function(croppedBlob){
+
+                        if(croppedBlob){
+
+                            resolve(croppedBlob);
+
+                        }else{
+
+                            reject(
+                                new Error("Unable to create cropped image.")
+                            );
+
+                        }
+
+                    },
+                    "image/jpeg",
+                    0.98
+                );
+
+            }
+            catch(error){
+
+                reject(error);
+
+            }
+
+        };
+
+        image.onerror = function(){
+
+            reject(
+                new Error("Unable to read captured image.")
+            );
+
+        };
+
+        image.src = URL.createObjectURL(blob);
+
+    });
+
+}
+
+
+/* ==========================
+   SHOW CAPTURED IMAGE
+========================== */
+
+function showCapturedImage(dataUrl){
+
+    pendingImage = dataUrl;
+
+    currentPreviewIndex = null;
+
+    document
+    .getElementById("previewImage")
+    .src = pendingImage;
+
+    document
+    .getElementById("saveBtn")
+    .style.display = "inline-block";
+
+    document
+    .getElementById("deleteBtn")
+    .style.display = "inline-block";
+
+    const modal =
+        new bootstrap.Modal(
+            document.getElementById("previewModal")
+        );
+
+    modal.show();
+
+}
+
+
+/* ==========================
+   CAPTURE PHOTO
+   CAPTURES ONLY THE SCAN FRAME
+========================== */
+
 async function capturePhoto(){
 
     if(!cameraStream){
@@ -379,10 +597,8 @@ async function capturePhoto(){
 
     }
 
-
     const track =
         cameraStream.getVideoTracks()[0];
-
 
     if(!track){
 
@@ -392,84 +608,46 @@ async function capturePhoto(){
 
     }
 
+    /*
+     * First try ImageCapture for the highest available
+     * still-photo resolution.
+     */
 
-    /* ==========================
-       TRY NATIVE HIGH-RES PHOTO
-    ========================== */
-
-    if(
-        typeof ImageCapture !== "undefined"
-    ){
+    if(typeof ImageCapture !== "undefined"){
 
         try{
 
             const imageCapture =
                 new ImageCapture(track);
 
-
             console.log(
                 "Taking high-resolution photo..."
             );
 
-
-            const blob =
+            const fullBlob =
                 await imageCapture.takePhoto();
 
+            const croppedBlob =
+                await cropBlobToScanFrame(fullBlob);
 
             const reader =
                 new FileReader();
 
-
             reader.onload = function(){
 
-                pendingImage =
-                    reader.result;
-
-
-                currentPreviewIndex =
-                    null;
-
-
-                document
-                .getElementById("previewImage")
-                .src =
-                    pendingImage;
-
-
-                document
-                .getElementById("saveBtn")
-                .style.display =
-                    "inline-block";
-
-
-                document
-                .getElementById("deleteBtn")
-                .style.display =
-                    "inline-block";
-
-
-                const modal =
-                    new bootstrap.Modal(
-                        document.getElementById(
-                            "previewModal"
-                        )
-                    );
-
-
-                modal.show();
+                showCapturedImage(
+                    reader.result
+                );
 
             };
 
-
-            reader.readAsDataURL(blob);
-
+            reader.readAsDataURL(croppedBlob);
 
             console.log(
-                "High-resolution photo captured:",
-                blob.size,
+                "Scan-frame photo captured:",
+                croppedBlob.size,
                 "bytes"
             );
-
 
             return;
 
@@ -477,7 +655,7 @@ async function capturePhoto(){
         catch(error){
 
             console.warn(
-                "Native high-resolution capture failed. Using fallback.",
+                "High-resolution frame capture failed. Using video fallback.",
                 error
             );
 
@@ -488,9 +666,7 @@ async function capturePhoto(){
 
     /* ==========================
        FALLBACK CAPTURE
-       FOR SAFARI / UNSUPPORTED
-       BROWSERS
-    ========================== */
+       ========================== */
 
     if(!camera.videoWidth){
 
@@ -500,87 +676,104 @@ async function capturePhoto(){
 
     }
 
+    const videoW = camera.videoWidth;
+    const videoH = camera.videoHeight;
 
-    canvas.width =
-        camera.videoWidth;
+    const videoRect = camera.getBoundingClientRect();
+    const frame = document.querySelector(".scan-frame");
 
+    if(!frame){
 
-    canvas.height =
-        camera.videoHeight;
+        alert("Scan frame not found");
 
+        return;
+
+    }
+
+    const frameRect = frame.getBoundingClientRect();
+
+    const videoAspect = videoW / videoH;
+    const boxAspect = videoRect.width / videoRect.height;
+
+    let renderedW;
+    let renderedH;
+    let offsetX;
+    let offsetY;
+
+    if(videoAspect > boxAspect){
+
+        renderedH = videoRect.height;
+        renderedW = renderedH * videoAspect;
+
+        offsetX = (renderedW - videoRect.width) / 2;
+        offsetY = 0;
+
+    }else{
+
+        renderedW = videoRect.width;
+        renderedH = renderedW / videoAspect;
+
+        offsetX = 0;
+        offsetY = (renderedH - videoRect.height) / 2;
+
+    }
+
+    const fx = frameRect.left - videoRect.left;
+    const fy = frameRect.top - videoRect.top;
+
+    let sx =
+        (fx + offsetX) *
+        (videoW / renderedW);
+
+    let sy =
+        (fy + offsetY) *
+        (videoH / renderedH);
+
+    let sw =
+        frameRect.width *
+        (videoW / renderedW);
+
+    let sh =
+        frameRect.height *
+        (videoH / renderedH);
+
+    sx = Math.max(0, Math.min(videoW, sx));
+    sy = Math.max(0, Math.min(videoH, sy));
+    sw = Math.min(sw, videoW - sx);
+    sh = Math.min(sh, videoH - sy);
+
+    canvas.width = Math.round(sw);
+    canvas.height = Math.round(sh);
 
     const ctx =
-        canvas.getContext(
-            "2d",
-            {
-                alpha:false
-            }
-        );
+        canvas.getContext("2d", {
+            alpha:false
+        });
 
-
-    ctx.imageSmoothingEnabled =
-        true;
-
-
-    ctx.imageSmoothingQuality =
-        "high";
-
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
 
     ctx.drawImage(
-
         camera,
-
+        sx,
+        sy,
+        sw,
+        sh,
         0,
-
         0,
-
         canvas.width,
-
         canvas.height
-
     );
 
-
-    pendingImage =
+    showCapturedImage(
         canvas.toDataURL(
             "image/jpeg",
             0.98
-        );
-
-
-    currentPreviewIndex =
-        null;
-
-
-    document
-    .getElementById("previewImage")
-    .src =
-        pendingImage;
-
-
-    document
-    .getElementById("saveBtn")
-    .style.display =
-        "inline-block";
-
-
-    document
-    .getElementById("deleteBtn")
-    .style.display =
-        "inline-block";
-
-
-    const modal =
-        new bootstrap.Modal(
-            document.getElementById(
-                "previewModal"
-            )
-        );
-
-
-    modal.show();
+        )
+    );
 
 }
+
 /* ==========================================
    DOCPRO SCANNER V2
    APP.JS PART 2/3
