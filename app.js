@@ -24,8 +24,8 @@ const pageCount = document.getElementById("pageCount");
 const thumbCounter = document.getElementById("thumbCounter");
 
 function isDriveConfigured() {
-    return GOOGLE_SCRIPT_URL &&
-        GOOGLE_SCRIPT_URL.includes("https://script.google.com/macros/s/AKfycbwOM-UTfKDI8VY8Cd2sIudzC-PwtB-ccDnZe9oYRVtLy0tDbLTP9yQRbmmdk9aSNL01/exec");
+    const url = String(GOOGLE_SCRIPT_URL || "").trim();
+    return /^https:\/\/script\.google\.com\/macros\/s\/[^\s]+\/exec$/.test(url);
 }
 
 /* ==========================
@@ -424,7 +424,7 @@ async function buildPdfBytes() {
 
 async function uploadToGoogleDrive() {
     if (!isDriveConfigured()) {
-        alert("Google Drive is not connected yet. Open app.js and paste your Google Apps Script Web App URL into GOOGLE_SCRIPT_URL.");
+        alert("Google Drive Web App URL is missing or invalid. Check GOOGLE_SCRIPT_URL in app.js.");
         return;
     }
 
