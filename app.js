@@ -5,7 +5,7 @@
 
 console.log("DOCPro APP JS LOADED");
 
-const GOOGLE_SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwOM-UTfKDI8VY8Cd2sIudzC-PwtB-ccDnZe9oYRVtLy0tDbLTP9yQRbmmdk9aSNL01/exec";
 
 let cameraStream = null;
 let capturedImages = [];
@@ -25,7 +25,7 @@ const thumbCounter = document.getElementById("thumbCounter");
 
 function isDriveConfigured() {
     return GOOGLE_SCRIPT_URL &&
-        !GOOGLE_SCRIPT_URL.includes("PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE");
+        !GOOGLE_SCRIPT_URL.includes("https://script.google.com/macros/s/AKfycbwOM-UTfKDI8VY8Cd2sIudzC-PwtB-ccDnZe9oYRVtLy0tDbLTP9yQRbmmdk9aSNL01/exec");
 }
 
 /* ==========================
