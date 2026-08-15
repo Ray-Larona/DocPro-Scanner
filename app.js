@@ -1,445 +1,200 @@
-/* ==========================
-   GLOBAL VARIABLES
-========================== */
+/* =========================================
+   DocPro Scanner V2
+   Stable Capture + Google Drive Upload
+========================================= */
 
-console.log("APP JS LOADED");
+console.log("DOCPro APP JS LOADED");
+
+const GOOGLE_SCRIPT_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
 
 let cameraStream = null;
-
 let capturedImages = [];
-
 let currentPreviewIndex = null;
-
 let pendingImage = null;
-
 let currentCameraMode = "environment";
 
-
-
 const loginScreen = document.getElementById("loginScreen");
-
 const homeScreen = document.getElementById("homeScreen");
-
 const scannerScreen = document.getElementById("scannerScreen");
-
 const reviewScreen = document.getElementById("reviewScreen");
-
-
-
 const camera = document.getElementById("camera");
-
 const canvas = document.getElementById("canvas");
-
 const thumbnailContainer = document.getElementById("thumbnailContainer");
-
 const pageCount = document.getElementById("pageCount");
-
 const thumbCounter = document.getElementById("thumbCounter");
 
+function isDriveConfigured() {
+    return GOOGLE_SCRIPT_URL &&
+        !GOOGLE_SCRIPT_URL.includes("PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE");
+}
 
 /* ==========================
-LOGIN SYSTEM
+   LOGIN SYSTEM
 ========================== */
 
-document
-.getElementById("loginBtn")
-.addEventListener("click", function(){
-
-    console.log("LOGIN CLICKED");
-
-
-    let username =
-    document.getElementById("username").value.trim();
-
-
-   let password =
-   document.getElementById("password").value.trim();
-
-
-   console.log("USERNAME:", username);
-   console.log("PASSWORD:", password);
+document.getElementById("loginBtn").addEventListener("click", function () {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
 
     const users = [
-
-        {
-            username:"Ray",
-            password:"123456"
-        },
-
-        {
-            username:"Dawn",
-            password:"54321"
-        },
-
-        {
-            username:"User",
-            password:"12345"
-        }
-
+        { username: "Ray", password: "123456" },
+        { username: "Dawn", password: "54321" },
+        { username: "User", password: "12345" }
     ];
 
+    const validUser = users.find(user =>
+        user.username === username && user.password === password
+    );
 
-
-    let validUser = users.find(function(user){
-
-        return user.username === username &&
-               user.password === password;
-
-    });
-
-   console.log("VALID USER:", validUser);
-
-    if(!validUser){
-
+    if (!validUser) {
         alert("Invalid username or password");
-
         return;
-
     }
-
-
-// Gumamit ng Bootstrap class para siguradong tanggal ang display flex
-loginScreen.classList.add("d-none"); 
-loginScreen.classList.remove("d-flex"); 
-
-// Ipakita ang home dashboard
-homeScreen.style.display = "block";
-
-// Remember that the user is logged in
-sessionStorage.setItem("docproLoggedIn", "true");
-
-
-});
-
-/* ==========================
-   RESTORE LOGIN AFTER REFRESH
-========================== */
-
-if(
-    sessionStorage.getItem("docproLoggedIn") === "true"
-){
 
     loginScreen.classList.add("d-none");
     loginScreen.classList.remove("d-flex");
-
     homeScreen.style.display = "block";
+    sessionStorage.setItem("docproLoggedIn", "true");
+});
 
+if (sessionStorage.getItem("docproLoggedIn") === "true") {
+    loginScreen.classList.add("d-none");
+    loginScreen.classList.remove("d-flex");
+    homeScreen.style.display = "block";
 }
 
 /* ==========================
    DASHBOARD NAVIGATION
 ========================== */
 
-
-
-document
-.getElementById("scanCard")
-.addEventListener(
-"click",
-function(){
-
+document.getElementById("scanCard").addEventListener("click", function () {
     homeScreen.style.display = "none";
-
     scannerScreen.style.display = "block";
-
     startCamera();
-
-    history.pushState(
-        { screen: "scanner" },
-        "",
-        location.href
-    );
-
+    history.pushState({ screen: "scanner" }, "", location.href);
 });
 
-document
-.getElementById("logoutCard")
-.addEventListener("click",function(){
-
-
+document.getElementById("logoutCard").addEventListener("click", function () {
     stopCamera();
-
-   sessionStorage.removeItem("docproLoggedIn");
-   
-   scannerScreen.style.display = "none";
-   homeScreen.style.display = "none";
-
-// Ibalik ang flexbox utility ng login screen
-loginScreen.classList.remove("d-none");
-loginScreen.classList.add("d-flex");
-
-
-});
-
-/* ==========================
-CLOSE CAMERA
-========================== */
-
-document
-.getElementById("closeCameraBtn")
-.addEventListener("click", function(){
-
-    stopCamera();
-
+    sessionStorage.removeItem("docproLoggedIn");
     scannerScreen.style.display = "none";
-
     reviewScreen.style.display = "none";
+    homeScreen.style.display = "none";
+    loginScreen.classList.remove("d-none");
+    loginScreen.classList.add("d-flex");
+});
 
+document.getElementById("closeCameraBtn").addEventListener("click", function () {
+    stopCamera();
+    scannerScreen.style.display = "none";
+    reviewScreen.style.display = "none";
     homeScreen.style.display = "block";
-
 });
 
 /* ==========================
-CAMERA START - HIGH RESOLUTION
+   CAMERA
 ========================== */
 
-function startCamera(){
+async function startCamera() {
+    stopCamera();
 
-    navigator.mediaDevices.getUserMedia({
-
-        video:{
-
-            facingMode:{
-                ideal: currentCameraMode
-            },
-
-            width:{
-                ideal: 3840
-            },
-
-            height:{
-                ideal: 2160
-            },
-
-            frameRate:{
-                ideal: 30,
-                max: 30
-            }
-        },
-
-        audio:false
-
-    })
-
-    .then(async function(stream){
-
-        cameraStream = stream;
-
-        camera.srcObject = stream;
-
-        camera.setAttribute("playsinline", "");
-        camera.setAttribute("autoplay", "");
-
-        await camera.play();
-
-        console.log(
-            "Camera video resolution:",
-            camera.videoWidth,
-            "x",
-            camera.videoHeight
-        );
-
-
-        /* ==========================
-           TRY TO ENABLE CONTINUOUS FOCUS
-        ========================== */
-
-        const track = stream.getVideoTracks()[0];
-
-        try{
-
-            const capabilities =
-                track.getCapabilities();
-
-            const advanced = {};
-
-            if(
-                capabilities.focusMode &&
-                capabilities.focusMode.includes("continuous")
-            ){
-
-                advanced.focusMode = "continuous";
-
-            }
-
-            if(
-                capabilities.zoom
-            ){
-
-                console.log(
-                    "Zoom supported:",
-                    capabilities.zoom
-                );
-
-            }
-
-            if(
-                Object.keys(advanced).length > 0
-            ){
-
-                await track.applyConstraints({
-                    advanced:[advanced]
-                });
-
-            }
-
-        }
-        catch(error){
-
-            console.log(
-                "Camera enhancement not supported:",
-                error
-            );
-
-        }
-
-    })
-
-    .catch(function(error){
-
-        console.error(
-            "Camera error:",
-            error
-        );
-
-        alert(
-            "Camera permission denied or camera is unavailable."
-        );
-
-    });
-
-}
-
-
-/* ==========================
-   CAMERA STOP
-========================== */
-
-
-function stopCamera(){
-
-
-    if(cameraStream){
-
-
-        let tracks =
-        cameraStream.getTracks();
-
-
-
-        tracks.forEach(function(track){
-
-
-            track.stop();
-
-
-        });
-
-
-
-        cameraStream=null;
-
-
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("Camera is not supported in this browser. Please use HTTPS in Chrome or Safari.");
+        return;
     }
 
+    try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: { ideal: currentCameraMode },
+                width: { ideal: 1920, max: 3840 },
+                height: { ideal: 1080, max: 2160 },
+                frameRate: { ideal: 30, max: 30 }
+            },
+            audio: false
+        });
 
+        camera.srcObject = cameraStream;
+        await camera.play();
+    } catch (error) {
+        console.error("Camera start error:", error);
+        alert("Unable to start camera. Please allow camera permission and try again.");
+    }
 }
 
+function stopCamera() {
+    if (!cameraStream) return;
 
-
-
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+    camera.srcObject = null;
+}
 
 /* ==========================
    CAPTURE BUTTON
 ========================== */
 
+document.getElementById("captureBtn").addEventListener("click", capturePhoto);
 
-document
-.getElementById("captureBtn")
-.addEventListener("click",function(){
+async function capturePhoto() {
+    const captureBtn = document.getElementById("captureBtn");
 
-
-    capturePhoto();
-
-
-});
-
-
-/* ==========================
-HIGH RESOLUTION CAPTURE
-========================== */
-
-async async function capturePhoto(){
-
-    if(!cameraStream || !camera || !camera.videoWidth || !camera.videoHeight){
-        alert("Camera not ready. Please wait for the camera preview.");
+    if (!cameraStream || !camera.videoWidth || !camera.videoHeight) {
+        alert("Camera is not ready yet. Please wait a moment and try again.");
         return;
     }
 
-    const frame = document.querySelector(".scan-frame");
+    captureBtn.disabled = true;
 
-    if(!frame){
-        alert("Scan frame not found.");
-        return;
-    }
-
-    try{
-        /*
-         * Capture directly from the live video.
-         * This avoids ImageCapture.takePhoto(), whose native photo
-         * dimensions/aspect ratio can differ from the visible preview.
-         */
-
+    try {
+        const frame = document.querySelector(".scan-frame");
         const videoRect = camera.getBoundingClientRect();
         const frameRect = frame.getBoundingClientRect();
 
-        const vw = camera.videoWidth;
-        const vh = camera.videoHeight;
-
-        if(videoRect.width <= 0 || videoRect.height <= 0){
-            throw new Error("Camera preview has no visible size.");
+        if (!videoRect.width || !videoRect.height || !frameRect.width || !frameRect.height) {
+            throw new Error("Camera or scan frame dimensions are not available.");
         }
 
         /*
-         * The video uses object-fit: cover. Work out which part of the
-         * native camera frame is actually visible in the HTML video.
+         * The video uses object-fit: cover. Convert the visible scan-frame
+         * rectangle back into source-video coordinates.
          */
+        const sourceWidth = camera.videoWidth;
+        const sourceHeight = camera.videoHeight;
+        const displayWidth = videoRect.width;
+        const displayHeight = videoRect.height;
+
         const scale = Math.max(
-            videoRect.width / vw,
-            videoRect.height / vh
+            displayWidth / sourceWidth,
+            displayHeight / sourceHeight
         );
 
-        const renderedWidth = vw * scale;
-        const renderedHeight = vh * scale;
+        const renderedWidth = sourceWidth * scale;
+        const renderedHeight = sourceHeight * scale;
+        const offsetX = (displayWidth - renderedWidth) / 2;
+        const offsetY = (displayHeight - renderedHeight) / 2;
 
-        const sourceOffsetX = (renderedWidth - videoRect.width) / 2;
-        const sourceOffsetY = (renderedHeight - videoRect.height) / 2;
+        const frameLeft = frameRect.left - videoRect.left;
+        const frameTop = frameRect.top - videoRect.top;
 
-        let sx =
-            ((frameRect.left - videoRect.left) + sourceOffsetX) / scale;
-
-        let sy =
-            ((frameRect.top - videoRect.top) + sourceOffsetY) / scale;
-
+        let sx = (frameLeft - offsetX) / scale;
+        let sy = (frameTop - offsetY) / scale;
         let sw = frameRect.width / scale;
         let sh = frameRect.height / scale;
 
-        /*
-         * Clamp the crop so drawImage never receives an invalid rectangle.
-         */
-        sx = Math.max(0, Math.min(sx, vw - 1));
-        sy = Math.max(0, Math.min(sy, vh - 1));
-        sw = Math.max(1, Math.min(sw, vw - sx));
-        sh = Math.max(1, Math.min(sh, vh - sy));
+        sx = Math.max(0, Math.min(sx, sourceWidth - 1));
+        sy = Math.max(0, Math.min(sy, sourceHeight - 1));
+        sw = Math.min(sw, sourceWidth - sx);
+        sh = Math.min(sh, sourceHeight - sy);
 
-        /*
-         * Render at the native crop resolution.
-         */
+        if (sw < 10 || sh < 10) {
+            throw new Error("Scan frame crop is too small.");
+        }
+
         canvas.width = Math.round(sw);
         canvas.height = Math.round(sh);
 
-        const ctx = canvas.getContext("2d", {alpha:false});
-
+        const ctx = canvas.getContext("2d", { alpha: false });
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = "high";
 
@@ -456,837 +211,306 @@ async async function capturePhoto(){
         document.getElementById("saveBtn").style.display = "inline-block";
         document.getElementById("deleteBtn").style.display = "inline-block";
 
-        const modal = new bootstrap.Modal(
-            document.getElementById("previewModal")
-        );
-
+        const modalElement = document.getElementById("previewModal");
+        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
         modal.show();
-
-        console.log("Scan frame captured:", {
-            source: {x:sx, y:sy, width:sw, height:sh},
-            output: {width:canvas.width, height:canvas.height}
-        });
-
-    }catch(error){
-        console.error("Scan frame capture failed:", error);
-        alert("Unable to capture the scan frame. Please try again.");
+    } catch (error) {
+        console.error("Capture error:", error);
+        alert("Unable to capture the scan frame. Please keep the document inside the frame and try again.");
+    } finally {
+        captureBtn.disabled = false;
     }
 }
 
-/* ==========================================
-   DOCPRO SCANNER V2
-   APP.JS PART 2/3
-========================================== */
-
-
 /* ==========================
-   UPDATE THUMBNAILS
+   THUMBNAILS / COUNTER
 ========================== */
 
+function updateThumbnails() {
+    thumbnailContainer.innerHTML = "";
 
-function updateThumbnails(){
-
-
-    thumbnailContainer.innerHTML="";
-
-
-    capturedImages.forEach(function(image,index){
-
-
-        let item =
-        document.createElement("div");
-
-
-        item.className =
-        "thumbnail-item";
-
-
+    capturedImages.forEach(function (image, index) {
+        const item = document.createElement("div");
+        item.className = "thumbnail-item";
         item.innerHTML = `
-
-            <img src="${image}">
-
-            <span class="thumbnail-number">
-
-                ${index + 1}
-
-            </span>
-
+            <img src="${image}" alt="Page ${index + 1}">
+            <span class="thumbnail-number">${index + 1}</span>
         `;
-
-
-
-        item.addEventListener(
-            "click",
-            function(){
-
-                openPreview(index);
-
-            }
-        );
-
-
-
+        item.addEventListener("click", function () {
+            openPreview(index);
+        });
         thumbnailContainer.appendChild(item);
-
-
-
     });
-
-
 }
 
-
-
-
-
-/* ==========================
-   PAGE COUNTER
-========================== */
-
-
-function updateCounter(){
-
-
-    let total =
-    capturedImages.length;
-
-
-
-    pageCount.innerText =
-    total;
-
-
-
-    thumbCounter.innerText =
-    total;
-
-
-
+function updateCounter() {
+    pageCount.innerText = capturedImages.length;
+    thumbCounter.innerText = capturedImages.length;
 }
 
-
-
-
-
 /* ==========================
-   OPEN PREVIEW
+   PREVIEW
 ========================== */
 
-
-function openPreview(index){
-
-
+function openPreview(index) {
     currentPreviewIndex = index;
+    pendingImage = null;
+    document.getElementById("previewImage").src = capturedImages[index];
+    document.getElementById("saveBtn").style.display = "none";
+    document.getElementById("deleteBtn").style.display = "inline-block";
 
-
-
-    let previewImage =
-    document.getElementById(
-        "previewImage"
-    );
-
-
-
-    previewImage.src =
-    capturedImages[index];
-
-
-
-    let modal =
-    new bootstrap.Modal(
-        document.getElementById(
-            "previewModal"
-        )
-    );
-
-
-
-    modal.show();
-
-
-
+    const modalElement = document.getElementById("previewModal");
+    bootstrap.Modal.getOrCreateInstance(modalElement).show();
 }
-
-
-
-
 
 /* ==========================
    ROTATE IMAGE
 ========================== */
 
+document.getElementById("rotateBtn").addEventListener("click", function () {
+    let source = null;
+    let targetIndex = null;
 
-document
-.getElementById("rotateBtn")
-.addEventListener(
-"click",
-function(){
-
-
-    if(currentPreviewIndex === null){
-
+    if (pendingImage !== null) {
+        source = pendingImage;
+        targetIndex = null;
+    } else if (currentPreviewIndex !== null) {
+        source = capturedImages[currentPreviewIndex];
+        targetIndex = currentPreviewIndex;
+    } else {
         return;
-
     }
 
+    const img = new Image();
+    img.onload = function () {
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = img.height;
+        tempCanvas.height = img.width;
 
+        const ctx = tempCanvas.getContext("2d");
+        ctx.translate(tempCanvas.width / 2, tempCanvas.height / 2);
+        ctx.rotate(Math.PI / 2);
+        ctx.drawImage(img, -img.width / 2, -img.height / 2);
 
-    let img =
-    new Image();
+        const rotated = tempCanvas.toDataURL("image/jpeg", 0.95);
 
+        if (targetIndex === null) {
+            pendingImage = rotated;
+        } else {
+            capturedImages[targetIndex] = rotated;
+            updateThumbnails();
+        }
 
-
-    img.src =
-    capturedImages[currentPreviewIndex];
-
-
-
-    img.onload=function(){
-
-
-        let tempCanvas =
-        document.createElement(
-            "canvas"
-        );
-
-
-
-        tempCanvas.width =
-        img.height;
-
-
-
-        tempCanvas.height =
-        img.width;
-
-
-
-        let ctx =
-        tempCanvas.getContext(
-            "2d"
-        );
-
-
-
-        ctx.translate(
-            tempCanvas.width / 2,
-            tempCanvas.height / 2
-        );
-
-
-        ctx.rotate(
-            90 * Math.PI / 180
-        );
-
-
-
-        ctx.drawImage(
-
-            img,
-
-            -img.width / 2,
-
-            -img.height / 2
-
-        );
-
-
-
-        capturedImages[currentPreviewIndex] =
-        tempCanvas.toDataURL(
-            "image/jpeg",
-            0.95
-        );
-
-
-
-        document
-        .getElementById(
-            "previewImage"
-        )
-        .src =
-        capturedImages[currentPreviewIndex];
-
-
-
-        updateThumbnails();
-
-
-
+        document.getElementById("previewImage").src = rotated;
     };
-
-
+    img.src = source;
 });
 
 /* ==========================
-   DELETE IMAGE
+   DELETE
 ========================== */
 
-document
-.getElementById("deleteBtn")
-.addEventListener(
-"click",
-function(){
-
-    /* ==========================
-       DELETE NEW PHOTO
-    ========================== */
-
-    if(pendingImage !== null){
-
+document.getElementById("deleteBtn").addEventListener("click", function () {
+    if (pendingImage !== null) {
         pendingImage = null;
-
-        const modalElement =
-            document.getElementById(
-                "previewModal"
-            );
-
-        const modal =
-            bootstrap.Modal.getInstance(
-                modalElement
-            );
-
-        if(modal){
-            modal.hide();
-        }
-
-        document
-        .getElementById("saveBtn")
-        .style.display = "none";
-
-      
+        bootstrap.Modal.getInstance(document.getElementById("previewModal"))?.hide();
         return;
     }
 
+    if (currentPreviewIndex === null) return;
 
-    /* ==========================
-       DELETE SAVED PAGE
-    ========================== */
+    if (!confirm("Delete this page?")) return;
 
-    if(currentPreviewIndex === null){
+    capturedImages.splice(currentPreviewIndex, 1);
+    updateThumbnails();
+    updateCounter();
 
-        return;
-
-    }
-
-
-    let confirmDelete =
-        confirm(
-            "Delete this page?"
-        );
-
-
-    if(confirmDelete){
-
-        capturedImages.splice(
-            currentPreviewIndex,
-            1
-        );
-
-
-        updateThumbnails();
-
-        updateCounter();
-
-
-        const modalElement =
-            document.getElementById(
-                "previewModal"
-            );
-
-        const modal =
-            bootstrap.Modal.getInstance(
-                modalElement
-            );
-
-        if(modal){
-            modal.hide();
-        }
-
-
-        currentPreviewIndex = null;
-
-    }
-
+    bootstrap.Modal.getInstance(document.getElementById("previewModal"))?.hide();
+    currentPreviewIndex = null;
 });
-
 
 /* ==========================
    SAVE NEW IMAGE
 ========================== */
 
-document
-.getElementById("saveBtn")
-.addEventListener(
-"click",
-function(){
+document.getElementById("saveBtn").addEventListener("click", function () {
+    if (pendingImage === null) return;
 
-    if(pendingImage === null){
-
-        return;
-
-    }
-
-
-    /* Save image */
-
-    capturedImages.push(
-        pendingImage
-    );
-
-
-    /* Clear temporary image */
-
+    capturedImages.push(pendingImage);
     pendingImage = null;
-
-
-    /* Update pages */
-
-    updateThumbnails();
-
-    updateCounter();
-
-
-    /* Close preview */
-
-    const modalElement =
-        document.getElementById(
-            "previewModal"
-        );
-
-    const modal =
-        bootstrap.Modal.getInstance(
-            modalElement
-        );
-
-    if(modal){
-        modal.hide();
-    }
-
-
-    /* Reset */
-
     currentPreviewIndex = null;
 
+    updateThumbnails();
+    updateCounter();
 
-    /* Button visibility */
-
-    document
-    .getElementById("saveBtn")
-    .style.display = "none";
-
-   
+    bootstrap.Modal.getInstance(document.getElementById("previewModal"))?.hide();
 });
-
-/* ==========================================
-   DOCPRO SCANNER V2
-   APP.JS PART 3/3
-========================================== */
-
-
 
 /* ==========================
    CONTINUE TO REVIEW
 ========================== */
 
-
-document
-.getElementById("continueBtn")
-.addEventListener(
-"click",
-function(){
-
-
-    if(capturedImages.length === 0){
-
-        alert(
-            "Please capture at least one page"
-        );
-
+document.getElementById("continueBtn").addEventListener("click", function () {
+    if (capturedImages.length === 0) {
+        alert("Please capture at least one page");
         return;
-
     }
-
-
 
     stopCamera();
-
-
-    scannerScreen.style.display="none";
-
-    reviewScreen.style.display="block";
-
-
+    scannerScreen.style.display = "none";
+    reviewScreen.style.display = "block";
     generateReview();
-  
-   history.pushState(
-    { screen: "review" },
-    "",
-    location.href
-);
-
-
-
+    history.pushState({ screen: "review" }, "", location.href);
 });
 
+function generateReview() {
+    const container = document.getElementById("reviewContainer");
+    container.innerHTML = "";
 
-
-
-
-/* ==========================
-   GENERATE REVIEW PAGE
-========================== */
-
-
-function generateReview(){
-
-
-    let container =
-    document.getElementById(
-        "reviewContainer"
-    );
-
-
-
-    container.innerHTML="";
-
-
-
-    capturedImages.forEach(
-    function(image,index){
-
-
-
-        let col =
-        document.createElement(
-            "div"
-        );
-
-
-
-        col.className =
-        "col-lg-4 col-md-6";
-
-
-
+    capturedImages.forEach(function (image, index) {
+        const col = document.createElement("div");
+        col.className = "col-lg-4 col-md-6";
         col.innerHTML = `
-
-        <div class="review-card">
-
-
-            <h5 class="mb-3">
-
-                Page ${index + 1}
-
-            </h5>
-
-
-            <img src="${image}">
-
-
-            <div class="text-center mt-3">
-
-
-                <button
-                class="btn btn-primary"
-                onclick="openPreview(${index})">
-
-                    View
-
-                </button>
-
-
+            <div class="review-card">
+                <h5 class="mb-3">Page ${index + 1}</h5>
+                <img src="${image}" alt="Page ${index + 1}">
+                <div class="text-center mt-3">
+                    <button class="btn btn-primary" onclick="openPreview(${index})">
+                        View
+                    </button>
+                </div>
             </div>
-
-
-        </div>
-
         `;
-
-
-
         container.appendChild(col);
-
-
-
     });
-
-
 }
 
-
-
-
-
-/* ==========================
-   BACK TO SCANNER
-========================== */
-
-
-document
-.getElementById("backToScannerBtn")
-.addEventListener(
-"click",
-function(){
-
-
-    reviewScreen.style.display="none";
-
-
-    scannerScreen.style.display="block";
-
-
+document.getElementById("backToScannerBtn").addEventListener("click", function () {
+    reviewScreen.style.display = "none";
+    scannerScreen.style.display = "block";
     startCamera();
-
-
 });
 
-
-
-
-
 /* ==========================
-   CREATE PDF
+   CREATE PDF + UPLOAD
 ========================== */
 
+document.getElementById("uploadDriveBtn").addEventListener("click", uploadToGoogleDrive);
 
-document
-.getElementById("createPdfBtn")
-.addEventListener(
-"click",
-async function(){
+async function buildPdfBytes() {
+    const pdfDoc = await PDFLib.PDFDocument.create();
 
-    if(capturedImages.length === 0){
-        alert("No scanned pages to upload.");
+    for (const imageData of capturedImages) {
+        const jpgImage = await pdfDoc.embedJpg(imageData);
+        const originalWidth = jpgImage.width;
+        const originalHeight = jpgImage.height;
+        const pageWidth = 595.28;
+        const pageHeight = 841.89;
+        const scale = Math.min(pageWidth / originalWidth, pageHeight / originalHeight);
+        const drawWidth = originalWidth * scale;
+        const drawHeight = originalHeight * scale;
+        const page = pdfDoc.addPage([pageWidth, pageHeight]);
+
+        page.drawImage(jpgImage, {
+            x: (pageWidth - drawWidth) / 2,
+            y: (pageHeight - drawHeight) / 2,
+            width: drawWidth,
+            height: drawHeight
+        });
+    }
+
+    return await pdfDoc.save();
+}
+
+async function uploadToGoogleDrive() {
+    if (!isDriveConfigured()) {
+        alert("Google Drive is not connected yet. Open app.js and paste your Google Apps Script Web App URL into GOOGLE_SCRIPT_URL.");
         return;
     }
 
-    const uploadUrl =
-        window.DOCPRO_GOOGLE_APPS_SCRIPT_URL ||
-        "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
-
-    if(uploadUrl.includes("PASTE_YOUR")){
-        alert("Google Drive is not connected yet. Add your Apps Script Web App URL in app.js.");
+    if (capturedImages.length === 0) {
+        alert("Please capture at least one page.");
         return;
     }
 
-    showLoading();
+    const button = document.getElementById("uploadDriveBtn");
+    button.disabled = true;
+    button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Uploading...';
+    showLoading("Uploading to Google Drive...");
 
-    try{
+    try {
+        const pdfBytes = await buildPdfBytes();
+        const binary = String.fromCharCode(...pdfBytes);
+        const base64 = btoa(binary);
 
-        const pdfDoc =
-            await PDFLib.PDFDocument.create();
-
-        for(const imageData of capturedImages){
-
-            const jpgImage =
-                await pdfDoc.embedJpg(imageData);
-
-            const page =
-                pdfDoc.addPage([
-                    jpgImage.width,
-                    jpgImage.height
-                ]);
-
-            page.drawImage(
-                jpgImage,
-                {
-                    x:0,
-                    y:0,
-                    width:jpgImage.width,
-                    height:jpgImage.height
-                }
-            );
-        }
-
-        const pdfBytes =
-            await pdfDoc.save();
-
-        const base64 =
-            arrayBufferToBase64(pdfBytes);
-
-        const fileName =
-            "DocPro-" +
-            new Date().toISOString().replace(/[:.]/g,"-") +
+        const fileName = "DocPro-" +
+            new Date().toISOString().replace(/[:.]/g, "-") +
             ".pdf";
 
-        const response =
-            await fetch(
-                uploadUrl,
-                {
-                    method:"POST",
-                    headers:{
-                        "Content-Type":"text/plain;charset=utf-8"
-                    },
-                    body:JSON.stringify({
-                        fileName:fileName,
-                        mimeType:"application/pdf",
-                        data:base64
-                    })
-                }
-            );
+        const payload = JSON.stringify({
+            action: "uploadPdf",
+            fileName,
+            mimeType: "application/pdf",
+            base64: base64
+        });
 
-        let result = null;
+        /* no-cors + plain POST avoids browser preflight on GitHub Pages. */
+        await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            body: payload
+        });
 
-        try{
-            result = await response.json();
-        }catch(e){
-            /* Some Apps Script/browser combinations return an opaque response. */
-        }
-
-        if(result && result.success === false){
-            throw new Error(result.error || "Google Drive upload failed.");
-        }
-
-        alert("Uploaded to Google Drive successfully.");
-
-    }catch(error){
-
-        console.error("Google Drive upload failed:", error);
-
-        alert(
-            "Unable to upload to Google Drive.\n\n" +
-            (error.message || error)
-        );
-
-    }finally{
         hideLoading();
+        button.disabled = false;
+        button.innerHTML = '<i class="bi bi-cloud-arrow-up-fill"></i> Upload to Google Drive';
+
+        const successModal = bootstrap.Modal.getOrCreateInstance(document.getElementById("successModal"));
+        document.getElementById("successTitle").textContent = "Upload Submitted";
+        document.getElementById("successMessage").textContent = "Your PDF was sent to Google Drive.";
+        successModal.show();
+    } catch (error) {
+        console.error("Google Drive upload error:", error);
+        hideLoading();
+        button.disabled = false;
+        button.innerHTML = '<i class="bi bi-cloud-arrow-up-fill"></i> Upload to Google Drive';
+        alert("Upload failed. Please check your Google Apps Script Web App URL and deployment settings.");
     }
-
-});
-
-function arrayBufferToBase64(buffer){
-
-    const bytes = new Uint8Array(buffer);
-    const chunkSize = 0x8000;
-    let binary = "";
-
-    for(let i=0; i<bytes.length; i+=chunkSize){
-        binary += String.fromCharCode.apply(
-            null,
-            bytes.subarray(i, i + chunkSize)
-        );
-    }
-
-    return btoa(binary);
 }
-
 
 /* ==========================
    LOADING
 ========================== */
 
-
-
-
-function showLoading(){
-
-
-    document
-    .getElementById(
-        "loadingOverlay"
-    )
-    .style.display="flex";
-
-
-
+function showLoading(message = "Preparing document...") {
+    document.getElementById("loadingMessage").textContent = message;
+    document.getElementById("loadingOverlay").style.display = "flex";
 }
 
-
-
-function hideLoading(){
-
-
-    document
-    .getElementById(
-        "loadingOverlay"
-    )
-    .style.display="none";
-
-
-
+function hideLoading() {
+    document.getElementById("loadingOverlay").style.display = "none";
 }
-/* ==========================
-   APP NAVIGATION / ANDROID BACK
-========================== */
-
-history.replaceState(
-    { screen: "dashboard" },
-    "",
-    location.href
-);
-
 
 /* ==========================
-   SCANNER NAVIGATION
+   NAVIGATION / BROWSER BACK
 ========================== */
 
-document
-.getElementById("scanCard")
-.addEventListener(
-"click",
-function(){
+history.replaceState({ screen: "dashboard" }, "", location.href);
 
-    homeScreen.style.display = "none";
+window.addEventListener("popstate", function (event) {
+    const screen = event.state?.screen;
 
-    scannerScreen.style.display = "block";
-
-    startCamera();
-
-    history.pushState(
-        { screen: "scanner" },
-        "",
-        location.href
-    );
-
-});
-
-
-/* ==========================
-   ANDROID / BROWSER BACK
-========================== */
-
-window.addEventListener(
-"popstate",
-function(event){
-
-    const screen =
-        event.state?.screen;
-
-
-    /* ==========================
-       REVIEW → SCANNER
-    ========================== */
-
-    if(screen === "scanner"){
-
+    if (screen === "scanner") {
         reviewScreen.style.display = "none";
-
         scannerScreen.style.display = "block";
-
         startCamera();
-
         return;
-
     }
 
-
-    /* ==========================
-       SCANNER → DASHBOARD
-    ========================== */
-
-    if(screen === "dashboard"){
-
+    if (screen === "dashboard") {
         stopCamera();
-
         scannerScreen.style.display = "none";
-
         reviewScreen.style.display = "none";
-
         homeScreen.style.display = "block";
-
-        return;
-
     }
-
 });
