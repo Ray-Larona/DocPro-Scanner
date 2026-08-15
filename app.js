@@ -440,7 +440,16 @@ async function uploadToGoogleDrive() {
 
     try {
         const pdfBytes = await buildPdfBytes();
-        const binary = String.fromCharCode(...pdfBytes);
+
+        // Convert the PDF bytes to Base64 in safe chunks.
+        // Using String.fromCharCode(...pdfBytes) can exceed the browser
+        // call-stack limit when the PDF is larger than a small file.
+        let binary = "";
+        const chunkSize = 0x8000;
+        for (let i = 0; i < pdfBytes.length; i += chunkSize) {
+            const chunk = pdfBytes.subarray(i, i + chunkSize);
+            binary += String.fromCharCode.apply(null, chunk);
+        }
         const base64 = btoa(binary);
 
         const fileName = "DocPro-" +
