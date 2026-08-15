@@ -25,7 +25,7 @@ const thumbCounter = document.getElementById("thumbCounter");
 
 function isDriveConfigured() {
     return GOOGLE_SCRIPT_URL &&
-        !GOOGLE_SCRIPT_URL.includes("https://script.google.com/macros/s/AKfycbwOM-UTfKDI8VY8Cd2sIudzC-PwtB-ccDnZe9oYRVtLy0tDbLTP9yQRbmmdk9aSNL01/exec");
+        GOOGLE_SCRIPT_URL.includes("https://script.google.com/macros/s/AKfycbwOM-UTfKDI8VY8Cd2sIudzC-PwtB-ccDnZe9oYRVtLy0tDbLTP9yQRbmmdk9aSNL01/exec");
 }
 
 /* ==========================
