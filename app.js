@@ -472,32 +472,48 @@ async function uploadToGoogleDrive() {
 
         const result = await response.json();
 
-        if (result.status === "success") {
+       if (result.status === "success") {
             hideLoading();
             button.disabled = false;
             button.innerHTML = '<i class="bi bi-cloud-arrow-up-fill"></i> Upload to Google Drive';
 
-            const successModal = bootstrap.Modal.getOrCreateInstance(document.getElementById("successModal"));
+            const successModalEl = document.getElementById("successModal");
+            const successModal = bootstrap.Modal.getOrCreateInstance(successModalEl);
             document.getElementById("successTitle").textContent = "Upload Successful";
             document.getElementById("successMessage").textContent = "Your PDF was successfully saved to Google Drive.";
+            
             successModal.show();
-           // 1. I-clear ang lahat ng na-scan na images at i-reset ang states
-            capturedImages = [];
-            pendingImage = null;
-            currentPreviewIndex = null;
+
+            // Hanapin ang button sa loob ng success modal para sa pag-click ng user
+            const successOkBtn = successModalEl.querySelector(".btn-secondary, .btn-primary, [data-bs-dismiss='modal']");
             
-            // 2. I-update ang UI para mag-zero ang page counters at mawala ang thumbnails
-            updateThumbnails();
-            updateCounter();
+            // Function para sa paglilinis at pag-balik sa dashboard
+            const handleDashboardReturn = function() {
+                // 1. I-clear ang memory at UI
+                capturedImages = [];
+                pendingImage = null;
+                currentPreviewIndex = null;
+                updateThumbnails();
+                updateCounter();
+                
+                const reviewContainer = document.getElementById("reviewContainer");
+                if (reviewContainer) reviewContainer.innerHTML = ""; 
+                
+                // 2. Ilipat ang display pabalik sa Home/Dashboard
+                reviewScreen.style.display = "none";
+                scannerScreen.style.display = "none";
+                homeScreen.style.display = "block";
+                
+                // 3. I-reset ang history
+                history.pushState({ screen: "dashboard" }, "", location.href);
+                
+                // 4. Tanggalin ang listener para hindi maulit nang doble
+                successModalEl.removeEventListener('hidden.bs.modal', handleDashboardReturn);
+            };
+
+            // Kapag tuluyang na-close ang modal, doon natin gagawin ang paglipat ng screen
+            successModalEl.addEventListener('hidden.bs.modal', handleDashboardReturn, { once: true });
             
-            // 3. I-hide ang review/scanner screens at ibalik ang home screen
-            reviewScreen.style.display = "none";
-            scannerScreen.style.display = "none";
-            homeScreen.style.display = "block";
-            
-            // 4. I-update ang browser history para hindi magloko kapag pinindot ang back button ng phone/browser
-            history.pushState({ screen: "dashboard" }, "", location.href);
-         
         } else {
             throw new Error(result.message || "Unknown error from Apps Script");
         }
