@@ -5,7 +5,7 @@
 
 console.log("DOCPro APP JS LOADED");
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwOM-UTfKDI8VY8Cd2sIudzC-PwtB-ccDnZe9oYRVtLy0tDbLTP9yQRbmmdk9aSNL01/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBrfysXkwEbtWjoFxBHduzLIgiXZOCcmSSDfyvuhI87xXLbi8I-fxQu8nFIHNYk6mtBw/exec";
 
 let cameraStream = null;
 let capturedImages = [];
