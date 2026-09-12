@@ -46,6 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const deleteBtn = document.getElementById("deleteBtn");
     const saveBtn = document.getElementById("saveBtn");
 
+    const documentsModalElement = document.getElementById("documentsModal");
+    const documentsModal = documentsModalElement ? new bootstrap.Modal(documentsModalElement) : null;
+
     // Review Screen
     const reviewContainer = document.getElementById("reviewContainer");
     const backToScannerBtn = document.getElementById("backToScannerBtn");
@@ -62,46 +65,55 @@ document.addEventListener("DOMContentLoaded", () => {
        1. LOGIN & NAVIGATION
        ========================================================================== */
 
-   /* ==========================================================================
-   1. LOGIN & NAVIGATION
-   ========================================================================== */
+    if (loginBtn) {
+        loginBtn.addEventListener("click", () => {
+            const user = usernameInput.value.trim();
+            const pass = passwordInput.value.trim();
 
-if (loginBtn) {
-    loginBtn.addEventListener("click", () => {
-        const user = usernameInput.value.trim();
-        const pass = passwordInput.value.trim();
+            if (user !== "" && pass !== "") {
+                loginScreen.classList.add("d-none");
+                loginScreen.classList.remove("d-flex");
+                loginScreen.style.display = "none";
 
-        if (user !== "" && pass !== "") {
-            // Itago ang Login Screen gamit ang Bootstrap 'd-none' at tanggalin ang 'd-flex'
-            loginScreen.classList.add("d-none");
-            loginScreen.classList.remove("d-flex");
-            loginScreen.style.display = "none";
+                homeScreen.style.display = "block";
+            } else {
+                alert("Paki-lagay ang iyong Username at Password.");
+            }
+        });
+    }
 
-            // Ipakita ang Dashboard
-            homeScreen.style.display = "block";
-        } else {
-            alert("Paki-lagay ang iyong Username at Password.");
-        }
-    });
-}
+    if (logoutCard) {
+        logoutCard.addEventListener("click", () => {
+            if (confirm("Sigurado ka bang gusto mong mag-logout?")) {
+                homeScreen.style.display = "none";
 
-if (logoutCard) {
-    logoutCard.addEventListener("click", () => {
-        if (confirm("Sigurado ka bang gusto mong mag-logout?")) {
-            // Itago ang Dashboard
+                loginScreen.classList.remove("d-none");
+                loginScreen.classList.add("d-flex");
+                loginScreen.style.display = "";
+
+                usernameInput.value = "";
+                passwordInput.value = "";
+                stopCamera();
+            }
+        });
+    }
+
+    if (scanCard) {
+        scanCard.addEventListener("click", () => {
             homeScreen.style.display = "none";
+            scannerScreen.style.display = "block";
+            startCamera();
+        });
+    }
 
-            // Ibalik ang Login Screen
-            loginScreen.classList.remove("d-none");
-            loginScreen.classList.add("d-flex");
-            loginScreen.style.display = "";
-
-            usernameInput.value = "";
-            passwordInput.value = "";
-            stopCamera();
-        }
-    });
-}
+    if (documentsCard) {
+        documentsCard.addEventListener("click", () => {
+            renderDocumentsList();
+            if (documentsModal) {
+                documentsModal.show();
+            }
+        });
+    }
 
     /* ==========================================================================
        2. CAMERA & SCANNER LOGIC
@@ -302,7 +314,6 @@ if (logoutCard) {
             reviewContainer.appendChild(col);
         });
 
-        // Add Event Listener sa mga Delete Buttons sa Review Grid
         document.querySelectorAll(".btn-remove-page").forEach(btn => {
             btn.addEventListener("click", (e) => {
                 const idx = parseInt(e.currentTarget.getAttribute("data-index"));
@@ -336,7 +347,7 @@ if (logoutCard) {
     }
 
     /* ==========================================================================
-       5. HISTORY MANAGEMENT
+       5. SCANNED DOCUMENTS HISTORY MANAGEMENT
        ========================================================================== */
 
     function renderDocumentsList() {
@@ -367,14 +378,6 @@ if (logoutCard) {
                 <span class="badge bg-success rounded-pill">Scanned</span>
             `;
             listContainer.appendChild(item);
-        });
-    }
-
-    if (documentsCard) {
-        documentsCard.addEventListener("click", () => {
-            renderDocumentsList();
-            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("documentsModal"));
-            modal.show();
         });
     }
 
