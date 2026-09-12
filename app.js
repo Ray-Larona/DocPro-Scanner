@@ -481,6 +481,23 @@ async function uploadToGoogleDrive() {
             document.getElementById("successTitle").textContent = "Upload Successful";
             document.getElementById("successMessage").textContent = "Your PDF was successfully saved to Google Drive.";
             successModal.show();
+           // 1. I-clear ang lahat ng na-scan na images at i-reset ang states
+            capturedImages = [];
+            pendingImage = null;
+            currentPreviewIndex = null;
+            
+            // 2. I-update ang UI para mag-zero ang page counters at mawala ang thumbnails
+            updateThumbnails();
+            updateCounter();
+            
+            // 3. I-hide ang review/scanner screens at ibalik ang home screen
+            reviewScreen.style.display = "none";
+            scannerScreen.style.display = "none";
+            homeScreen.style.display = "block";
+            
+            // 4. I-update ang browser history para hindi magloko kapag pinindot ang back button ng phone/browser
+            history.pushState({ screen: "dashboard" }, "", location.href);
+         
         } else {
             throw new Error(result.message || "Unknown error from Apps Script");
         }
