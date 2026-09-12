@@ -2,10 +2,14 @@
    DOCPRO SCANNER V2 - COMPLETE APP LOGIC
    ========================================================================== */
 
+// --- CONFIGURATION ---
+// Replace this with your Google Apps Script Web App Deployment URL
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBrfysXkwEbtWjoFxBHduzLIgiXZOCcmSSDfyvuhI87xXLbi8I-fxQu8nFIHNYk6mtBw/exec";
+
 // --- GLOBAL VARIABLES & STATE ---
 let currentStream = null;
 let facingMode = "environment"; // Back camera default
-let scannedPages = [];          // Listahan ng Base64 Image URLs
+let scannedPages = [];          // List of Base64 Image URLs
 let currentPreviewIndex = null;
 let currentRotation = 0;
 
@@ -77,14 +81,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 homeScreen.style.display = "block";
             } else {
-                alert("Please insert Username and Password.");
+                alert("Please enter your Username and Password.");
             }
         });
     }
 
     if (logoutCard) {
         logoutCard.addEventListener("click", () => {
-            if (confirm("Do you want to logout?")) {
+            if (confirm("Are you sure you want to log out?")) {
                 homeScreen.style.display = "none";
 
                 loginScreen.classList.remove("d-none");
@@ -136,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
             video.srcObject = currentStream;
         } catch (err) {
             console.error("Camera access error:", err);
-            alert("Can't open the camera. Make sure the camera permission is allowed in the browser.");
+            alert("Unable to access camera. Please ensure camera permissions are enabled in your browser.");
         }
     }
 
@@ -268,13 +272,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* ==========================================================================
-       4. REVIEW SCREEN & UPLOAD
+       4. REVIEW SCREEN & GOOGLE DRIVE UPLOAD
        ========================================================================== */
 
     if (continueBtn) {
         continueBtn.addEventListener("click", () => {
             if (scannedPages.length === 0) {
-                alert("Please take a photo before continuing.");
+                alert("Please capture at least one page before continuing.");
                 return;
             }
 
@@ -331,18 +335,66 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (uploadDriveBtn) {
-        uploadDriveBtn.addEventListener("click", () => {
-            if (scannedPages.length === 0) return;
+        uploadDriveBtn.addEventListener("click", async () => {
+            if (scannedPages.length === 0) {
+                alert("No pages to upload.");
+                return;
+            }
 
-            showLoading("Uploading to Google Drive...", 50);
+            showLoading("Generating PDF & Uploading to Google Drive...", 20);
 
-            setTimeout(() => {
-                const fileName = `DocPro-Drive-${Date.now()}.pdf`;
+            try {
+                // 1. Generate PDF from scanned images using pdf-lib
+                const { PDFDocument } = PDFLib;
+                const pdfDoc = await PDFDocument.create();
+
+                for (let i = 0; i < scannedPages.length; i++) {
+                    const base64Data = scannedPages[i];
+                    const imageBytes = await fetch(base64Data).then(res => res.arrayBuffer());
+                    const image = await pdfDoc.embedJpg(imageBytes);
+
+                    const page = pdfDoc.addPage([image.width, image.height]);
+                    page.drawImage(image, {
+                        x: 0,
+                        y: 0,
+                        width: image.width,
+                        height: image.height,
+                    });
+
+                    const percent = Math.round(((i + 1) / scannedPages.length) * 50) + 20;
+                    updateLoadingProgress(percent);
+                }
+
+                // 2. Convert to Base64 PDF Data
+                const pdfBase64 = await pdfDoc.saveAsBase64({ dataUri: true });
+                const fileName = `DocPro-Scan-${Date.now()}.pdf`;
+
+                updateLoadingProgress(80);
+
+                // 3. Send to Google Apps Script Web App
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        fileName: fileName,
+                        fileData: pdfBase64
+                    })
+                });
+
+                updateLoadingProgress(100);
+
+                // 4. Save entry to local history
                 saveToHistory(fileName, scannedPages.length);
 
                 hideLoading();
                 if (successModal) successModal.show();
-            }, 1500);
+
+            } catch (error) {
+                console.error("Upload Error:", error);
+                hideLoading();
+                alert("An error occurred while uploading to Google Drive.");
+            }
         });
     }
 
@@ -360,7 +412,7 @@ document.addEventListener("DOMContentLoaded", () => {
             listContainer.innerHTML = `
                 <li class="list-group-item text-center text-muted py-4">
                     <i class="bi bi-inbox display-6 d-block mb-2"></i>
-                    Walang nakatagong scanned document history.
+                    No scanned document history found.
                 </li>`;
             return;
         }
@@ -384,7 +436,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const clearHistoryBtn = document.getElementById("clearHistoryBtn");
     if (clearHistoryBtn) {
         clearHistoryBtn.addEventListener("click", () => {
-            if (confirm("Are you sure you want to delete the history?")) {
+            if (confirm("Are you sure you want to clear your scan history?")) {
                 scannedHistory = [];
                 localStorage.removeItem("docpro_history");
                 renderDocumentsList();
