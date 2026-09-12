@@ -1,5 +1,5 @@
 /* ==========================================================================
-   DOCPRO SCANNER V2 - COMPLETE APP LOGIC
+   DOCPRO SCANNER V2 - COMPLETE APP LOGIC WITH CAPTURE PREVIEW
    ========================================================================== */
 
 // --- CONFIGURATION ---
@@ -9,8 +9,9 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBrfysXkwEbt
 // --- GLOBAL VARIABLES & STATE ---
 let currentStream = null;
 let facingMode = "environment"; // Back camera default
-let scannedPages = [];          // List of Base64 Image URLs
-let currentPreviewIndex = null;
+let scannedPages = [];          // List of saved Base64 Image URLs
+let tempCapturedImage = null;   // Temporarily holds the newly captured image
+let currentPreviewIndex = null; // Index if viewing an already-saved thumbnail
 let currentRotation = 0;
 
 // LocalStorage History
@@ -89,6 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (logoutCard) {
         logoutCard.addEventListener("click", () => {
             if (confirm("Are you sure you want to log out?")) {
+                resetAppToHome();
                 homeScreen.style.display = "none";
 
                 loginScreen.classList.remove("d-none");
@@ -97,7 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 usernameInput.value = "";
                 passwordInput.value = "";
-                stopCamera();
             }
         });
     }
@@ -153,12 +154,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (closeCameraBtn) {
         closeCameraBtn.addEventListener("click", () => {
-            stopCamera();
-            scannerScreen.style.display = "none";
-            homeScreen.style.display = "block";
+            resetAppToHome();
         });
     }
 
+    // Capture Image -> Open Preview First (Do NOT add to array yet)
     if (captureBtn) {
         captureBtn.addEventListener("click", () => {
             if (!currentStream) return;
@@ -169,10 +169,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const ctx = canvas.getContext("2d");
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            const imageDataUrl = canvas.toDataURL("image/jpeg", 0.92);
-            scannedPages.push(imageDataUrl);
+            tempCapturedImage = canvas.toDataURL("image/jpeg", 0.92);
+            currentPreviewIndex = null; // Denotes a fresh capture, not from thumbnails
+            currentRotation = 0;
 
-            updateThumbnails();
+            previewImage.src = tempCapturedImage;
+            previewImage.style.transform = "rotate(0deg)";
+
+            if (previewModal) previewModal.show();
         });
     }
 
@@ -183,10 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (pageCountSpan) pageCountSpan.innerText = count;
         if (thumbCounter) thumbCounter.innerText = count;
 
-        // Clear existing preview items
         thumbnailContainer.innerHTML = "";
-
-        // Make sure preview container is visible
         thumbnailContainer.style.display = "block";
 
         scannedPages.forEach((imgData, index) => {
@@ -202,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
             img.style.objectFit = "cover";
 
             img.addEventListener("click", () => {
-                openPreview(index);
+                openPreviewFromThumbnail(index);
             });
 
             const badge = document.createElement("span");
@@ -214,7 +215,6 @@ document.addEventListener("DOMContentLoaded", () => {
             thumbnailContainer.appendChild(wrapper);
         });
 
-        // Ensure browser renders and scrolls to the newest preview thumbnail
         requestAnimationFrame(() => {
             const lastChild = thumbnailContainer.lastElementChild;
             if (lastChild) {
@@ -224,12 +224,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* ==========================================================================
-       3. PREVIEW & EDIT
+       3. PREVIEW, ROTATE & SAVE/DELETE DECISION
        ========================================================================== */
 
-    function openPreview(index) {
+    function openPreviewFromThumbnail(index) {
         currentPreviewIndex = index;
+        tempCapturedImage = null;
         currentRotation = 0;
+
         previewImage.src = scannedPages[index];
         previewImage.style.transform = `rotate(${currentRotation}deg)`;
         if (previewModal) previewModal.show();
@@ -242,13 +244,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // SAVE BUTTON: Commits the image to scannedPages & updates thumbnails
     if (saveBtn) {
         saveBtn.addEventListener("click", () => {
-            if (currentPreviewIndex === null) return;
+            let targetImage = (currentPreviewIndex !== null) ? scannedPages[currentPreviewIndex] : tempCapturedImage;
+
+            if (!targetImage) return;
 
             if (currentRotation !== 0) {
                 const img = new Image();
-                img.src = scannedPages[currentPreviewIndex];
+                img.src = targetImage;
                 img.onload = () => {
                     const rotCanvas = document.createElement("canvas");
                     const ctx = rotCanvas.getContext("2d");
@@ -265,23 +270,42 @@ document.addEventListener("DOMContentLoaded", () => {
                     ctx.rotate((currentRotation * Math.PI) / 180);
                     ctx.drawImage(img, -img.width / 2, -img.height / 2);
 
-                    scannedPages[currentPreviewIndex] = rotCanvas.toDataURL("image/jpeg", 0.92);
-                    updateThumbnails();
-                    if (previewModal) previewModal.hide();
+                    const finalRotatedImage = rotCanvas.toDataURL("image/jpeg", 0.92);
+
+                    if (currentPreviewIndex !== null) {
+                        scannedPages[currentPreviewIndex] = finalRotatedImage;
+                    } else {
+                        scannedPages.push(finalRotatedImage);
+                    }
+
+                    finishSaveProcess();
                 };
             } else {
-                if (previewModal) previewModal.hide();
+                if (currentPreviewIndex === null) {
+                    scannedPages.push(tempCapturedImage);
+                }
+                finishSaveProcess();
             }
         });
     }
 
+    function finishSaveProcess() {
+        tempCapturedImage = null;
+        currentPreviewIndex = null;
+        updateThumbnails();
+        if (previewModal) previewModal.hide();
+    }
+
+    // DELETE BUTTON: Discards new scan or removes existing thumbnail
     if (deleteBtn) {
         deleteBtn.addEventListener("click", () => {
             if (currentPreviewIndex !== null) {
                 scannedPages.splice(currentPreviewIndex, 1);
                 updateThumbnails();
-                if (previewModal) previewModal.hide();
             }
+            tempCapturedImage = null;
+            currentPreviewIndex = null;
+            if (previewModal) previewModal.hide();
         });
     }
 
@@ -292,7 +316,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (continueBtn) {
         continueBtn.addEventListener("click", () => {
             if (scannedPages.length === 0) {
-                alert("Please capture at least one page before continuing.");
+                alert("Please capture and save at least one page before continuing.");
                 return;
             }
 
@@ -401,10 +425,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 updateLoadingProgress(100);
 
-                // 4. Save entry to local history & reset array
+                // 4. Save entry to local history
                 saveToHistory(fileName, scannedPages.length);
-                scannedPages = [];
-                updateThumbnails();
 
                 hideLoading();
                 if (successModal) successModal.show();
@@ -414,6 +436,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 hideLoading();
                 alert("An error occurred while uploading to Google Drive.");
             }
+        });
+    }
+
+    // Auto-return to Dashboard when Success Modal is closed
+    if (successModalElement) {
+        successModalElement.addEventListener("hidden.bs.modal", () => {
+            resetAppToHome();
         });
     }
 
@@ -476,6 +505,16 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ==========================================================================
        6. HELPERS
        ========================================================================== */
+
+    function resetAppToHome() {
+        stopCamera();
+        scannedPages = [];
+        tempCapturedImage = null;
+        updateThumbnails();
+        reviewScreen.style.display = "none";
+        scannerScreen.style.display = "none";
+        homeScreen.style.display = "block";
+    }
 
     function showLoading(msg, percent) {
         if (loadingMessage) loadingMessage.innerText = msg;
