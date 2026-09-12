@@ -1,6 +1,6 @@
 /**
  * DocPro Scanner V2 - Complete Main Engine (app.js)
- * Includes Login Authentication, Dynamic Multi-Company Backend Switching,
+ * Includes Login Authentication (Multiple Users), Dynamic Multi-Company Backend Switching,
  * Camera Image Processing, and PDF Streaming to Google Apps Script.
  */
 
@@ -8,18 +8,15 @@
 // 1. CONFIGURATION & STATE
 // ==========================================
 
-// Credentials for Authentication (Change as needed)
+// Multiple User Credentials for Authentication
 const ALLOWED_USERS = [
-  { username: "Ray", password: "123456" }, //otaku
-  { username: "Dawn", password: "54321" }, //otaku
-   { username: "User1", password: "12345" },
-  { username: "User2", password: "112233" } 
+  { username: "admin", password: "password123" },
+  { username: "manager", password: "docpro2026" }
 ];
-
 
 // Endpoints mapped to Company Selection Key
 const COMPANY_ENDPOINTS = {
-  company_a: "https://script.google.com/macros/s/AKfycbwBrfysXkwEbtWjoFxBHduzLIgiXZOCcmSSDfyvuhI87xXLbi8I-fxQu8nFIHNYk6mtBw/exec",
+  company_a: "https://script.google.com/macros/s/AKfycbx_EXAMPLE_COMPANY_A/exec",
   company_b: "https://script.google.com/macros/s/AKfycbx_EXAMPLE_COMPANY_B/exec",
   company_c: "https://script.google.com/macros/s/AKfycbx_EXAMPLE_COMPANY_C/exec"
 };
@@ -39,14 +36,18 @@ function login() {
   const loginError = document.getElementById("loginError");
 
   if (!userInput || !passInput) {
-    showError(loginError, "Pakilagay ang username at password.");
+    showError(loginError, "Please enter both username and password.");
     return;
   }
 
-  // Check Credentials
-  if (userInput === AUTH_CREDENTIALS.username && passInput === AUTH_CREDENTIALS.password) {
+  // Check if credentials match any user in the ALLOWED_USERS array
+  const validUser = ALLOWED_USERS.find(
+    user => user.username === userInput && user.password === passInput
+  );
+
+  if (validUser) {
     if (!COMPANY_ENDPOINTS[companyKey]) {
-      showError(loginError, "Pumili ng tamang kompanya.");
+      showError(loginError, "Please select a valid company.");
       return;
     }
 
@@ -63,7 +64,7 @@ function login() {
     // Auto start camera after successful auth
     initCamera();
   } else {
-    showError(loginError, "Maling Username o Password!");
+    showError(loginError, "Invalid Username or Password!");
   }
 }
 
@@ -105,7 +106,7 @@ async function initCamera() {
       videoElement.play();
     }
   } catch (err) {
-    alert("Hindi ma-access ang camera: " + err.message);
+    alert("Unable to access camera: " + err.message);
   }
 }
 
@@ -149,7 +150,7 @@ function renderGallery() {
     card.className = "gallery-card";
     card.innerHTML = `
       <img src="${imgSrc}" alt="Scan ${idx + 1}" />
-      <button onclick="deletePhoto(${idx})" class="btn-delete">Burahin</button>
+      <button onclick="deletePhoto(${idx})" class="btn-delete">Delete</button>
     `;
     galleryContainer.appendChild(card);
   });
@@ -164,7 +165,7 @@ function renderGallery() {
 
 async function generatePdfBase64() {
   if (capturedImages.length === 0) {
-    throw new Error("Walang nakakapturang larawan para gawing PDF.");
+    throw new Error("No images available to generate PDF.");
   }
 
   // Uses global PDFLib script loaded in HTML
@@ -217,11 +218,11 @@ async function uploadDocument() {
   const fileName = (docNameInput?.value.trim() || "DocPro_Scan") + "_" + Date.now() + ".pdf";
 
   if (capturedImages.length === 0) {
-    alert("Mag-scan muna ng kahit isang page bago i-upload.");
+    alert("Please scan at least one page before uploading.");
     return;
   }
 
-  if (statusElement) statusElement.innerText = "Ginagawang PDF at ina-upload...";
+  if (statusElement) statusElement.innerText = "Generating PDF and uploading...";
 
   try {
     const base64Pdf = await generatePdfBase64();
@@ -242,7 +243,7 @@ async function uploadDocument() {
       body: JSON.stringify(payload)
     });
 
-    if (statusElement) statusElement.innerText = "Na-upload na nang matagumpay!";
+    if (statusElement) statusElement.innerText = "Uploaded successfully!";
     
     // Reset workspace after success
     setTimeout(() => {
@@ -254,7 +255,7 @@ async function uploadDocument() {
 
   } catch (err) {
     console.error(err);
-    if (statusElement) statusElement.innerText = "Nagka-error sa pag-upload: " + err.message;
+    if (statusElement) statusElement.innerText = "Upload failed: " + err.message;
   }
 }
 
