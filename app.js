@@ -7,7 +7,7 @@
 const COMPANY_CONFIG = {
     companyA: {
         name: "Company A",
-        scriptUrl: "YOUR_GOOGLE_APPS_SCRIPT_URL_FOR_COMPANY_A"
+        scriptUrl: "https://script.google.com/macros/s/AKfycbwBrfysXkwEbtWjoFxBHduzLIgiXZOCcmSSDfyvuhI87xXLbi8I-fxQu8nFIHNYk6mtBw/exec"
     },
     companyB: {
         name: "Company B",
