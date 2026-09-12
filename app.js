@@ -64,7 +64,6 @@ loginBtn.addEventListener("click", () => {
     const user = usernameInput.value.trim();
     const pass = passwordInput.value.trim();
 
-    // Halimbawa ng simpleng authentication
     if (user !== "" && pass !== "") {
         loginScreen.style.display = "none";
         homeScreen.style.display = "block";
@@ -202,7 +201,6 @@ saveBtn.addEventListener("click", () => {
     if (currentPreviewIndex === null) return;
 
     if (currentRotation !== 0) {
-        // I-apply ang rotation sa Canvas bago i-save
         const img = new Image();
         img.src = scannedPages[currentPreviewIndex];
         img.onload = () => {
