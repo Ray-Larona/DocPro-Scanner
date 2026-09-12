@@ -25,173 +25,292 @@
 <body>
 
 <div id="app">
-
 <!-- ===========================
      LOGIN SCREEN
 =========================== -->
 <div id="loginScreen" class="container-fluid vh-100 d-flex justify-content-center align-items-center">
-    <div class="login-card shadow-lg p-4 rounded bg-white">
-        
+    <div class="login-card shadow-lg">
         <div class="text-center mb-4">
-            <div class="logo-icon display-4 text-primary">
+            <div class="logo-icon">
                 <i class="bi bi-file-earmark-text-fill"></i>
             </div>
-            <h1 class="logo-title h3 fw-bold">DocPro</h1>
-            <div class="logo-subtitle text-muted">Smart Document Scanner</div>
-            <div class="logo-by text-muted small">by RNTL</div>
+            <h1 class="logo-title">DocPro</h1>
+            <div class="logo-subtitle">Smart Document Scanner</div>
+            <div class="logo-by">by RNTL</div>
         </div>
 
         <div class="mb-3">
-            <label for="companySelect" class="form-label fw-bold">Select Company</label>
-            <select id="companySelect" class="form-select">
-                <option value="company_a">Otaku House</option>
-                <option value="company_b">Company B</option>
-                <option value="company_c">Company C</option>
-            </select>
+            <label class="form-label">Username</label>
+            <input id="username" type="text" class="form-control" placeholder="Enter Username">
         </div>
 
-        <div class="mb-3">
-            <label for="usernameInput" class="form-label">Username</label>
-            <input id="usernameInput" type="text" class="form-control" placeholder="Enter Username">
+        <div class="mb-4">
+            <label class="form-label">Password</label>
+            <input id="password" type="password" class="form-control" placeholder="Enter Password">
         </div>
 
-        <div class="mb-3">
-            <label for="passwordInput" class="form-label">Password</label>
-            <input id="passwordInput" type="password" class="form-control" placeholder="Enter Password">
-        </div>
-
-        <button id="loginBtn" type="button" class="btn btn-primary w-100 mb-2">
+        <button id="loginBtn" class="btn btn-primary w-100">
             <i class="bi bi-box-arrow-in-right"></i> Login
         </button>
+    </div>
+</div>
+<!-- END LOGIN SCREEN -->
 
-        <!-- Display error message -->
-        <div id="loginError" class="text-center fw-bold mt-2" style="min-height: 24px;"></div>
+<!-- ===========================
+     HOME DASHBOARD
+============================ -->
+<div id="homeScreen" class="container-fluid py-4" style="display:none;">
+    <div class="container">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">
+                    <i class="bi bi-house-door-fill"></i> Dashboard
+                </h2>
+                <small class="text-muted">Welcome to DocPro Scanner V2</small>
+            </div>
+            <div>
+                <span class="badge bg-primary fs-6 px-3 py-2">
+                    <i class="bi bi-person-circle"></i> ADMIN
+                </span>
+            </div>
+        </div>
 
+        <!-- Dashboard Cards -->
+        <div class="row g-4 justify-content-center">
+            <!-- Scan Document -->
+            <div class="col-lg-4 col-md-6">
+                <div id="scanCard" class="dashboard-card text-center p-4" style="cursor: pointer;">
+                    <div class="dashboard-icon text-primary mb-3">
+                        <i class="bi bi-camera-fill display-5"></i>
+                    </div>
+                    <h4>Scan Document</h4>
+                    <p class="text-muted mb-0">Capture single or multiple pages.</p>
+                </div>
+            </div>
+
+            <!-- Documents -->
+            <div class="col-lg-4 col-md-6">
+                <div id="documentsCard" class="dashboard-card text-center p-4" style="cursor: pointer;">
+                    <div class="dashboard-icon text-success mb-3">
+                        <i class="bi bi-folder-fill display-5"></i>
+                    </div>
+                    <h4>Scanned Documents</h4>
+                    <p class="text-muted mb-0">View recent scanned history.</p>
+                </div>
+            </div>
+
+            <!-- Logout -->
+            <div class="col-lg-4 col-md-6">
+                <div id="logoutCard" class="dashboard-card text-center p-4" style="cursor: pointer;">
+                    <div class="dashboard-icon text-danger mb-3">
+                        <i class="bi bi-box-arrow-right display-5"></i>
+                    </div>
+                    <h4>Logout</h4>
+                    <p class="text-muted mb-0">Sign out of DocPro.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END HOME DASHBOARD -->
+
+<!-- ===========================
+     SCANNER SCREEN
+============================ -->
+<div id="scannerScreen" class="container-fluid py-3" style="display:none;">
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h3 class="fw-bold mb-0">
+                    <i class="bi bi-camera-fill"></i> DocPro Scanner
+                </h3>
+                <small class="text-muted">Capture clear document pages</small>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-primary fs-6 px-3 py-2">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span id="pageCount">0</span> Page(s)
+                </span>
+
+                <button id="closeCameraBtn" class="btn btn-outline-light">
+                    <i class="bi bi-x-lg"></i> Close
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Scanner Layout -->
+        <div class="row g-3">
+            <div class="col-lg-9">
+                <div class="scanner-card">
+                    <div class="camera-wrapper">
+                        <video id="camera" autoplay playsinline muted></video>
+                        <div class="camera-overlay">
+                            <div class="scan-frame"></div>
+                        </div>
+                    </div>
+
+                    <canvas id="canvas" style="display:none;"></canvas>
+
+                    <div class="scanner-buttons">
+                        <button id="captureBtn" class="btn btn-primary btn-lg">
+                            <i class="bi bi-camera-fill"></i>
+                        </button>
+
+                        <button id="continueBtn" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle-fill"></i> Continue
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="thumbnail-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">
+                            <i class="bi bi-images"></i> Pages
+                        </h5>
+                        <span id="thumbCounter" class="badge bg-secondary">0</span>
+                    </div>
+
+                    <div id="thumbnailContainer" class="thumbnail-container">
+                        <!-- JS will insert thumbnails here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END SCANNER SCREEN -->
+
+<!-- ===========================
+     PREVIEW MODAL
+=========================== -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-file-image"></i> Document Preview
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                <img id="previewImage" src="" class="img-fluid rounded shadow" style="max-height:70vh;">
+            </div>
+
+            <div class="modal-footer justify-content-between">
+                <div>
+                    <button id="rotateBtn" class="btn btn-warning">
+                        <i class="bi bi-arrow-clockwise"></i> Rotate
+                    </button>
+                    <button id="deleteBtn" class="btn btn-danger">
+                        <i class="bi bi-trash-fill"></i> Delete
+                    </button>
+                    <button id="saveBtn" class="btn btn-success">
+                        <i class="bi bi-check-circle-fill"></i> Save
+                    </button>
+                </div>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END PREVIEW MODAL -->
+
+<!-- ===========================
+     REVIEW SCREEN
+=========================== -->
+<div id="reviewScreen" class="container-fluid py-4" style="display:none;">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">
+                    <i class="bi bi-file-earmark-check-fill"></i> Review Document
+                </h2>
+                <small class="text-muted">Check every page before uploading to Google Drive</small>
+            </div>
+            <button id="backToScannerBtn" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back
+            </button>
+        </div>
+
+        <div id="reviewContainer" class="row g-4"></div>
+
+        <div class="text-center mt-5 gap-3 d-flex justify-content-center">
+            <button id="uploadDriveBtn" class="btn btn-success btn-lg px-4">
+                <i class="bi bi-cloud-arrow-up-fill"></i> Upload to Google Drive
+            </button>
+        </div>
+    </div>
+</div>
+<!-- END REVIEW SCREEN -->
+
+<!-- ===========================
+     DOCUMENTS HISTORY MODAL
+=========================== -->
+<div class="modal fade" id="documentsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-folder-fill text-success me-2"></i> Scanned Documents History
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group" id="documentsList">
+                    <!-- JS will insert scanned documents history -->
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger btn-sm me-auto" id="clearHistoryBtn">
+                    <i class="bi bi-trash"></i> Clear History
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- ===========================
-     MAIN APP / HOME SCREEN
+     LOADING OVERLAY
 =========================== -->
-<div id="appContainer" style="display:none;">
-
-    <div id="homeScreen">
-        <!-- Top Navbar -->
-        <div class="top-nav">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-file-earmark-text-fill fs-4 text-primary"></i>
-                    <span class="fw-bold fs-5">DocPro</span>
-                </div>
-                <div>
-                    <button id="logoutBtn" class="btn btn-sm btn-outline-danger">
-                        <i class="bi bi-box-arrow-right"></i> Logout
-                    </button>
-                </div>
-            </div>
+<div id="loadingOverlay" class="loading-overlay" style="display:none;">
+    <div class="loading-box">
+        <div class="spinner-border text-primary mb-3" role="status"></div>
+        <h4 id="loadingMessage" class="mb-2">Preparing document...</h4>
+        <p class="text-muted mb-3">Please wait...</p>
+        <div class="progress">
+            <div id="loadingProgress" class="progress-bar progress-bar-striped progress-bar-animated" style="width:0%">0%</div>
         </div>
+    </div>
+</div>
 
-        <!-- Main Content Area -->
-        <div class="main-content">
-            <div class="welcome-box mb-4">
-                <h2 class="h4 fw-bold">Document Scanner</h2>
-                <p class="text-muted mb-0">Capture, manage, and export your documents</p>
-            </div>
-
-            <!-- Dashboard Grid -->
-            <div class="row g-3">
-                <div class="col-6">
-                    <div class="dash-card bg-primary text-white p-3 rounded-4 shadow-sm text-center position-relative">
-                        <i class="bi bi-camera-fill display-5 mb-2"></i>
-                        <h3 class="h6 mb-0">Scan New</h3>
-                        <a href="#" id="openScannerBtn" class="stretched-link"></a>
-                    </div>
+<!-- ===========================
+     SUCCESS MODAL
+=========================== -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-5">
+                <div class="display-1 text-success mb-3">
+                    <i class="bi bi-check-circle-fill"></i>
                 </div>
-                <div class="col-6">
-                    <div class="dash-card bg-white p-3 rounded-4 shadow-sm text-center position-relative">
-                        <i class="bi bi-folder-fill display-5 text-warning mb-2"></i>
-                        <h3 class="h6 mb-0">Documents</h3>
-                        <span id="docBadge" class="badge bg-secondary rounded-pill position-absolute top-0 end-0 m-2">0</span>
-                        <a href="#" id="openDocsBtn" class="stretched-link"></a>
-                    </div>
-                </div>
+                <h3 id="successTitle">Upload Submitted</h3>
+                <p id="successMessage" class="text-muted">Your PDF was sent to Google Drive.</p>
+                <button class="btn btn-success px-5" data-bs-dismiss="modal">OK</button>
             </div>
         </div>
     </div>
-
-    <!-- ===========================
-         SCANNER SCREEN
-    =========================== -->
-    <div id="scannerScreen" class="d-none">
-        <div class="top-nav">
-            <div class="d-flex justify-content-between align-items-center">
-                <button id="closeScannerBtn" class="btn btn-link text-dark p-0">
-                    <i class="bi bi-x-lg fs-4"></i>
-                </button>
-                <span class="fw-bold">Scan Document</span>
-                <button id="flashToggleBtn" class="btn btn-link text-dark p-0">
-                    <i class="bi bi-lightning-fill fs-5"></i>
-                </button>
-            </div>
-        </div>
-
-        <div class="camera-container">
-            <video id="cameraStream" autoplay playsinline muted></video>
-            <div class="scanner-guide"></div>
-        </div>
-
-        <div class="scanner-controls">
-            <div class="d-flex justify-content-around align-items-center w-100">
-                <div id="galleryPreviewBtn" class="preview-thumb rounded">
-                    <span id="capturedCount" class="badge bg-danger">0</span>
-                </div>
-                <button id="captureBtn" class="btn btn-light rounded-circle p-3 shadow">
-                    <div class="capture-inner rounded-circle"></div>
-                </button>
-                <button id="finishScanBtn" class="btn btn-success rounded-circle">
-                    <i class="bi bi-check-lg fs-4"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===========================
-         REVIEW / UPLOAD SCREEN
-    =========================== -->
-    <div id="reviewScreen" class="d-none">
-        <div class="top-nav">
-            <div class="d-flex justify-content-between align-items-center">
-                <button id="backToScannerBtn" class="btn btn-link text-dark p-0">
-                    <i class="bi bi-arrow-left fs-4"></i>
-                </button>
-                <span class="fw-bold">Review Pages (<span id="pageCount">0</span>)</span>
-                <button id="saveDocBtn" class="btn btn-primary btn-sm fw-bold">Save</button>
-            </div>
-        </div>
-
-        <div class="main-content">
-            <div class="mb-3">
-                <label for="documentName" class="form-label fw-bold">Document Name</label>
-                <input id="documentName" type="text" class="form-control" placeholder="e.g., Invoice_001">
-            </div>
-
-            <button id="uploadBtn" class="btn btn-success w-100 mb-3">
-                <i class="bi bi-cloud-arrow-up-fill"></i> Upload PDF
-            </button>
-            
-            <div id="uploadStatus" class="mt-2 text-center fw-bold"></div>
-
-            <div id="imageGallery" class="row g-2 mt-2"></div>
-        </div>
-    </div>
-
 </div>
 
 <!-- JavaScript Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-
-<!-- App Logic -->
 <script src="app.js"></script>
 
 </div>
