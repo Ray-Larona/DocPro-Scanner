@@ -10,10 +10,10 @@
 
 // Multiple User Credentials for Authentication
 const ALLOWED_USERS = [
-  { username: "Ray", password: "123456" }, //otaku
-  { username: "Dawn", password: "54321" }, //otaku
-   { username: "User1", password: "12345" },
-  { username: "User2", password: "112233" } 
+  { username: "Ray", password: "123456" },   // otaku
+  { username: "Dawn", password: "54321" },    // otaku
+  { username: "User1", password: "12345" },
+  { username: "User2", password: "112233" }
 ];
 
 // Endpoints mapped to Company Selection Key
