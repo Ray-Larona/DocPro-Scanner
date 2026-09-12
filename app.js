@@ -177,21 +177,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateThumbnails() {
+        if (!thumbnailContainer) return;
+
         const count = scannedPages.length;
         if (pageCountSpan) pageCountSpan.innerText = count;
         if (thumbCounter) thumbCounter.innerText = count;
 
+        // Clear existing preview items
         thumbnailContainer.innerHTML = "";
+
+        // Make sure preview container is visible
+        thumbnailContainer.style.display = "block";
 
         scannedPages.forEach((imgData, index) => {
             const wrapper = document.createElement("div");
-            wrapper.className = "position-relative mb-2";
+            wrapper.className = "position-relative mb-2 d-inline-block me-2 me-md-0";
 
             const img = document.createElement("img");
             img.src = imgData;
             img.className = "img-thumbnail rounded";
             img.style.cursor = "pointer";
-            img.style.maxHeight = "100px";
+            img.style.width = "70px";
+            img.style.height = "90px";
+            img.style.objectFit = "cover";
 
             img.addEventListener("click", () => {
                 openPreview(index);
@@ -206,7 +214,13 @@ document.addEventListener("DOMContentLoaded", () => {
             thumbnailContainer.appendChild(wrapper);
         });
 
-        thumbnailContainer.scrollTop = thumbnailContainer.scrollHeight;
+        // Ensure browser renders and scrolls to the newest preview thumbnail
+        requestAnimationFrame(() => {
+            const lastChild = thumbnailContainer.lastElementChild;
+            if (lastChild) {
+                lastChild.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "end" });
+            }
+        });
     }
 
     /* ==========================================================================
@@ -294,6 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
             reviewScreen.style.display = "none";
             scannerScreen.style.display = "block";
             startCamera();
+            updateThumbnails();
         });
     }
 
@@ -302,7 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         scannedPages.forEach((imgSrc, idx) => {
             const col = document.createElement("div");
-            col.className = "col-md-3 col-6";
+            col.className = "col-md-3 col-6 mb-3";
 
             col.innerHTML = `
                 <div class="card h-100 shadow-sm">
@@ -365,27 +380,31 @@ document.addEventListener("DOMContentLoaded", () => {
                     updateLoadingProgress(percent);
                 }
 
-                // 2. Convert to Base64 PDF Data
-                const pdfBase64 = await pdfDoc.saveAsBase64({ dataUri: true });
+                // 2. Convert to raw Base64 string (strip data URI header)
+                const pdfDataUri = await pdfDoc.saveAsBase64({ dataUri: true });
+                const rawBase64 = pdfDataUri.split(",")[1] || pdfDataUri;
                 const fileName = `DocPro-Scan-${Date.now()}.pdf`;
 
                 updateLoadingProgress(80);
 
-                // 3. Send to Google Apps Script Web App
+                // 3. Send payload matching Google Apps Script parameters
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
+                        action: "uploadPdf",
                         fileName: fileName,
-                        fileData: pdfBase64
+                        base64: rawBase64
                     })
                 });
 
                 updateLoadingProgress(100);
 
-                // 4. Save entry to local history
+                // 4. Save entry to local history & reset array
                 saveToHistory(fileName, scannedPages.length);
+                scannedPages = [];
+                updateThumbnails();
 
                 hideLoading();
                 if (successModal) successModal.show();
