@@ -142,15 +142,20 @@ function showError(msg) {
 }
 
 // ==========================================
-// 4. SCREEN NAVIGATION FUNCTIONS
+// 4. SCREEN NAVIGATION FUNCTIONS (FIXED)
 // ==========================================
 function showLoginScreen() {
-    loginScreen.style.display = "flex";
+    // Ibinabalik ang d-flex para bumalik ang center alignment ng login box
+    loginScreen.classList.remove("d-none");
+    loginScreen.classList.add("d-flex");
     appContainer.style.display = "none";
 }
 
 function showHomeScreen() {
-    loginScreen.style.display = "none";
+    // Tinatanggal ang d-flex at nilalagyan ng d-none para pilitin mawala ng Bootstrap
+    loginScreen.classList.remove("d-flex");
+    loginScreen.classList.add("d-none");
+    
     appContainer.style.display = "block";
     
     if (homeScreen) homeScreen.classList.remove("d-none");
