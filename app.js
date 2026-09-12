@@ -1,16 +1,26 @@
 /* ==========================================================================
-   DOCPRO SCANNER V2 - COMPLETE APP LOGIC WITH CAPTURE PREVIEW
+   DOCPRO SCANNER V2 - COMPLETE APP LOGIC WITH MULTI-COMPANY SUPPORT
    ========================================================================== */
 
-// --- CONFIGURATION ---
-// Replace this with your Google Apps Script Web App Deployment URL
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBrfysXkwEbtWjoFxBHduzLIgiXZOCcmSSDfyvuhI87xXLbi8I-fxQu8nFIHNYk6mtBw/exec";
+// --- MULTI-COMPANY CONFIGURATION ---
+// Palitan ang mga URL na ito batay sa Web App URLs ng bawat kumpanya
+const COMPANY_CONFIG = {
+    companyA: {
+        name: "Company A",
+        scriptUrl: "YOUR_GOOGLE_APPS_SCRIPT_URL_FOR_COMPANY_A"
+    },
+    companyB: {
+        name: "Company B",
+        scriptUrl: "YOUR_GOOGLE_APPS_SCRIPT_URL_FOR_COMPANY_B"
+    }
+};
 
 // --- GLOBAL VARIABLES & STATE ---
+let activeGoogleScriptUrl = ""; // Dynamic URL batay sa napiling kumpanya
 let currentStream = null;
 let facingMode = "environment"; // Back camera default
 let scannedPages = [];          // List of saved Base64 Image URLs
-let tempCapturedImage = null;   // Temporarily holds the newly captured image
+let tempCapturedImage = null;   // Temporarily holds newly captured image
 let currentPreviewIndex = null; // Index if viewing an already-saved thumbnail
 let currentRotation = 0;
 
@@ -28,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const usernameInput = document.getElementById("username");
     const passwordInput = document.getElementById("password");
+    const companySelect = document.getElementById("companySelect");
     const loginBtn = document.getElementById("loginBtn");
 
     const scanCard = document.getElementById("scanCard");
@@ -74,8 +85,17 @@ document.addEventListener("DOMContentLoaded", () => {
         loginBtn.addEventListener("click", () => {
             const user = usernameInput.value.trim();
             const pass = passwordInput.value.trim();
+            const selectedCompanyKey = companySelect ? companySelect.value : "companyA";
 
             if (user !== "" && pass !== "") {
+                // Set the active script URL dynamically based on chosen company
+                if (COMPANY_CONFIG[selectedCompanyKey]) {
+                    activeGoogleScriptUrl = COMPANY_CONFIG[selectedCompanyKey].scriptUrl;
+                } else {
+                    alert("Selected company configuration not found.");
+                    return;
+                }
+
                 loginScreen.classList.add("d-none");
                 loginScreen.classList.remove("d-flex");
                 loginScreen.style.display = "none";
@@ -99,6 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 usernameInput.value = "";
                 passwordInput.value = "";
+                activeGoogleScriptUrl = "";
             }
         });
     }
@@ -158,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Capture Image -> Open Preview First (Do NOT add to array yet)
+    // Capture Image -> Open Preview Modal for confirmation
     if (captureBtn) {
         captureBtn.addEventListener("click", () => {
             if (!currentStream) return;
@@ -170,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             tempCapturedImage = canvas.toDataURL("image/jpeg", 0.92);
-            currentPreviewIndex = null; // Denotes a fresh capture, not from thumbnails
+            currentPreviewIndex = null; // Denotes new capture
             currentRotation = 0;
 
             previewImage.src = tempCapturedImage;
@@ -224,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* ==========================================================================
-       3. PREVIEW, ROTATE & SAVE/DELETE DECISION
+       3. PREVIEW & EDIT DECISION
        ========================================================================== */
 
     function openPreviewFromThumbnail(index) {
@@ -244,7 +265,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // SAVE BUTTON: Commits the image to scannedPages & updates thumbnails
     if (saveBtn) {
         saveBtn.addEventListener("click", () => {
             let targetImage = (currentPreviewIndex !== null) ? scannedPages[currentPreviewIndex] : tempCapturedImage;
@@ -296,7 +316,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (previewModal) previewModal.hide();
     }
 
-    // DELETE BUTTON: Discards new scan or removes existing thumbnail
     if (deleteBtn) {
         deleteBtn.addEventListener("click", () => {
             if (currentPreviewIndex !== null) {
@@ -380,6 +399,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            if (!activeGoogleScriptUrl) {
+                alert("No company selected. Please log in again.");
+                return;
+            }
+
             showLoading("Generating PDF & Uploading to Google Drive...", 20);
 
             try {
@@ -411,8 +435,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 updateLoadingProgress(80);
 
-                // 3. Send payload matching Google Apps Script parameters
-                await fetch(GOOGLE_SCRIPT_URL, {
+                // 3. Send payload matching chosen company URL
+                await fetch(activeGoogleScriptUrl, {
                     method: "POST",
                     mode: "no-cors",
                     headers: { "Content-Type": "application/json" },
@@ -439,7 +463,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Auto-return to Dashboard when Success Modal is closed
+    // Return to Dashboard automatically after closing Success Modal
     if (successModalElement) {
         successModalElement.addEventListener("hidden.bs.modal", () => {
             resetAppToHome();
@@ -447,7 +471,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* ==========================================================================
-       5. SCANNED DOCUMENTS HISTORY MANAGEMENT
+       5. HISTORY MANAGEMENT
        ========================================================================== */
 
     function renderDocumentsList() {
