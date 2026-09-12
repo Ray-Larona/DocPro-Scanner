@@ -62,39 +62,46 @@ document.addEventListener("DOMContentLoaded", () => {
        1. LOGIN & NAVIGATION
        ========================================================================== */
 
-    if (loginBtn) {
-        loginBtn.addEventListener("click", () => {
-            const user = usernameInput.value.trim();
-            const pass = passwordInput.value.trim();
+   /* ==========================================================================
+   1. LOGIN & NAVIGATION
+   ========================================================================== */
 
-            if (user !== "" && pass !== "") {
-                loginScreen.style.display = "none";
-                homeScreen.style.display = "block";
-            } else {
-                alert("Paki-lagay ang iyong Username at Password.");
-            }
-        });
-    }
+if (loginBtn) {
+    loginBtn.addEventListener("click", () => {
+        const user = usernameInput.value.trim();
+        const pass = passwordInput.value.trim();
 
-    if (logoutCard) {
-        logoutCard.addEventListener("click", () => {
-            if (confirm("Sigurado ka bang gusto mong mag-logout?")) {
-                homeScreen.style.display = "none";
-                loginScreen.style.display = "flex";
-                usernameInput.value = "";
-                passwordInput.value = "";
-                stopCamera();
-            }
-        });
-    }
+        if (user !== "" && pass !== "") {
+            // Itago ang Login Screen gamit ang Bootstrap 'd-none' at tanggalin ang 'd-flex'
+            loginScreen.classList.add("d-none");
+            loginScreen.classList.remove("d-flex");
+            loginScreen.style.display = "none";
 
-    if (scanCard) {
-        scanCard.addEventListener("click", () => {
+            // Ipakita ang Dashboard
+            homeScreen.style.display = "block";
+        } else {
+            alert("Paki-lagay ang iyong Username at Password.");
+        }
+    });
+}
+
+if (logoutCard) {
+    logoutCard.addEventListener("click", () => {
+        if (confirm("Sigurado ka bang gusto mong mag-logout?")) {
+            // Itago ang Dashboard
             homeScreen.style.display = "none";
-            scannerScreen.style.display = "block";
-            startCamera();
-        });
-    }
+
+            // Ibalik ang Login Screen
+            loginScreen.classList.remove("d-none");
+            loginScreen.classList.add("d-flex");
+            loginScreen.style.display = "";
+
+            usernameInput.value = "";
+            passwordInput.value = "";
+            stopCamera();
+        }
+    });
+}
 
     /* ==========================================================================
        2. CAMERA & SCANNER LOGIC
