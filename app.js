@@ -173,11 +173,16 @@ async function capturePhoto() {
         const frameLeft = frameRect.left - videoRect.left;
         const frameTop = frameRect.top - videoRect.top;
 
-        let sx = (frameLeft - offsetX) / scale;
-        let sy = (frameTop - offsetY) / scale;
-        let sw = frameRect.width / scale;
-        let sh = frameRect.height / scale;
+        // Pwede mong taasan ito (e.g., 5 or 10) kung gusto mo pang paliitin ang nakukuha papasok
+        const cropPadding = 3; 
 
+        // I-adjust ang starting x at y para pumasok sa loob ng guhit
+        let sx = ((frameLeft - offsetX) / scale) + cropPadding;
+        let sy = ((frameTop - offsetY) / scale) + cropPadding;
+        // Bawasan ang width at height para hindi makasama ang border
+        let sw = (frameRect.width / scale) - (cropPadding * 2);
+        let sh = (frameRect.height / scale) - (cropPadding * 2);
+       
         sx = Math.max(0, Math.min(sx, sourceWidth - 1));
         sy = Math.max(0, Math.min(sy, sourceHeight - 1));
         sw = Math.min(sw, sourceWidth - sx);
