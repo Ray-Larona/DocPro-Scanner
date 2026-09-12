@@ -155,10 +155,6 @@ async function capturePhoto() {
             throw new Error("Camera or scan frame dimensions are not available.");
         }
 
-        /*
-         * The video uses object-fit: cover. Convert the visible scan-frame
-         * rectangle back into source-video coordinates.
-         */
         const sourceWidth = camera.videoWidth;
         const sourceHeight = camera.videoHeight;
         const displayWidth = videoRect.width;
@@ -441,9 +437,6 @@ async function uploadToGoogleDrive() {
     try {
         const pdfBytes = await buildPdfBytes();
 
-        // Convert the PDF bytes to Base64 in safe chunks.
-        // Using String.fromCharCode(...pdfBytes) can exceed the browser
-        // call-stack limit when the PDF is larger than a small file.
         let binary = "";
         const chunkSize = 0x8000;
         for (let i = 0; i < pdfBytes.length; i += chunkSize) {
@@ -458,32 +451,40 @@ async function uploadToGoogleDrive() {
 
         const payload = JSON.stringify({
             action: "uploadPdf",
-            fileName,
+            fileName: fileName,
             mimeType: "application/pdf",
             base64: base64
         });
 
-        /* no-cors + plain POST avoids browser preflight on GitHub Pages. */
-        await fetch(GOOGLE_SCRIPT_URL, {
+        /* Ginamitan ng text/plain header para iwas CORS preflight issue sa Google Apps Script */
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
             method: "POST",
-            mode: "no-cors",
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
             body: payload
         });
 
-        hideLoading();
-        button.disabled = false;
-        button.innerHTML = '<i class="bi bi-cloud-arrow-up-fill"></i> Upload to Google Drive';
+        const result = await response.json();
 
-        const successModal = bootstrap.Modal.getOrCreateInstance(document.getElementById("successModal"));
-        document.getElementById("successTitle").textContent = "Upload Submitted";
-        document.getElementById("successMessage").textContent = "Your PDF was sent to Google Drive.";
-        successModal.show();
+        if (result.status === "success") {
+            hideLoading();
+            button.disabled = false;
+            button.innerHTML = '<i class="bi bi-cloud-arrow-up-fill"></i> Upload to Google Drive';
+
+            const successModal = bootstrap.Modal.getOrCreateInstance(document.getElementById("successModal"));
+            document.getElementById("successTitle").textContent = "Upload Successful";
+            document.getElementById("successMessage").textContent = "Your PDF was successfully saved to Google Drive.";
+            successModal.show();
+        } else {
+            throw new Error(result.message || "Unknown error from Apps Script");
+        }
     } catch (error) {
         console.error("Google Drive upload error:", error);
         hideLoading();
         button.disabled = false;
         button.innerHTML = '<i class="bi bi-cloud-arrow-up-fill"></i> Upload to Google Drive';
-        alert("Upload failed. Please check your Google Apps Script Web App URL and deployment settings.");
+        alert("Upload failed: " + error.message);
     }
 }
 
