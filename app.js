@@ -77,14 +77,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 homeScreen.style.display = "block";
             } else {
-                alert("Paki-lagay ang iyong Username at Password.");
+                alert("Please insert Username and Password.");
             }
         });
     }
 
     if (logoutCard) {
         logoutCard.addEventListener("click", () => {
-            if (confirm("Sigurado ka bang gusto mong mag-logout?")) {
+            if (confirm("Do you want to logout?")) {
                 homeScreen.style.display = "none";
 
                 loginScreen.classList.remove("d-none");
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
             video.srcObject = currentStream;
         } catch (err) {
             console.error("Camera access error:", err);
-            alert("Hindi mabuksan ang camera. Siguraduhing pinayagan ang camera permission sa browser.");
+            alert("Can't open the camera. Make sure the camera permission is allowed in the browser.");
         }
     }
 
@@ -274,7 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (continueBtn) {
         continueBtn.addEventListener("click", () => {
             if (scannedPages.length === 0) {
-                alert("Kumuha muna ng kahit isang pahina bago magpatuloy.");
+                alert("Please take a photo before continuing.");
                 return;
             }
 
@@ -384,7 +384,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const clearHistoryBtn = document.getElementById("clearHistoryBtn");
     if (clearHistoryBtn) {
         clearHistoryBtn.addEventListener("click", () => {
-            if (confirm("Sigurado ka bang gusto mong burahin ang history?")) {
+            if (confirm("Are you sure you want to delete the history?")) {
                 scannedHistory = [];
                 localStorage.removeItem("docpro_history");
                 renderDocumentsList();
