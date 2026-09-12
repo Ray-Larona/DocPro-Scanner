@@ -10,13 +10,15 @@
 
 // Multiple User Credentials for Authentication
 const ALLOWED_USERS = [
-  { username: "admin", password: "password123" },
-  { username: "manager", password: "docpro2026" }
+  { username: "Ray", password: "123456" }, //otaku
+  { username: "Dawn", password: "54321" }, //otaku
+   { username: "User1", password: "12345" },
+  { username: "User2", password: "112233" } 
 ];
 
 // Endpoints mapped to Company Selection Key
 const COMPANY_ENDPOINTS = {
-  company_a: "https://script.google.com/macros/s/AKfycbx_EXAMPLE_COMPANY_A/exec",
+  company_a: "https://script.google.com/macros/s/AKfycbwBrfysXkwEbtWjoFxBHduzLIgiXZOCcmSSDfyvuhI87xXLbi8I-fxQu8nFIHNYk6mtBw/exec",
   company_b: "https://script.google.com/macros/s/AKfycbx_EXAMPLE_COMPANY_B/exec",
   company_c: "https://script.google.com/macros/s/AKfycbx_EXAMPLE_COMPANY_C/exec"
 };
