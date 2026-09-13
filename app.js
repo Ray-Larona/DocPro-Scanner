@@ -80,10 +80,10 @@ document.getElementById("documentsCard").addEventListener("click", function () {
     loadDocuments();
 });
 
-
 async function loadDocuments() {
 
-    const documentsList = document.getElementById("documentsList");
+    const documentsList = window.document.getElementById("documentsList");
+    const documentsModalElement = window.document.getElementById("documentsModal");
 
     documentsList.innerHTML = `
         <li class="list-group-item text-center py-4">
@@ -93,7 +93,7 @@ async function loadDocuments() {
     `;
 
     const documentsModal = bootstrap.Modal.getOrCreateInstance(
-        document.getElementById("documentsModal")
+        documentsModalElement
     );
 
     documentsModal.show();
@@ -115,12 +115,17 @@ async function loadDocuments() {
         const result = await response.json();
 
         if (result.status !== "success") {
-            throw new Error(result.message || "Unable to load documents");
+            throw new Error(
+                result.message || "Unable to load documents"
+            );
         }
 
-        const documents = result.data.documents || [];
+        const driveDocuments =
+            result.data && Array.isArray(result.data.documents)
+                ? result.data.documents
+                : [];
 
-        if (documents.length === 0) {
+        if (driveDocuments.length === 0) {
 
             documentsList.innerHTML = `
                 <li class="list-group-item text-center py-4">
@@ -136,7 +141,7 @@ async function loadDocuments() {
 
         documentsList.innerHTML = "";
 
-        documents.forEach(function (doc) {
+        driveDocuments.forEach(function (doc) {
 
             const date = new Date(doc.date);
 
@@ -148,7 +153,8 @@ async function loadDocuments() {
                 minute: "2-digit"
             });
 
-            const item = document.createElement("li");
+            // Explicitly use window.document
+            const item = window.document.createElement("li");
 
             item.className =
                 "list-group-item d-flex justify-content-between align-items-center";
@@ -168,6 +174,7 @@ async function loadDocuments() {
                 <a
                     href="${doc.url}"
                     target="_blank"
+                    rel="noopener noreferrer"
                     class="btn btn-warning btn-sm"
                 >
                     <i class="bi bi-eye-fill"></i> View
@@ -184,9 +191,11 @@ async function loadDocuments() {
         documentsList.innerHTML = `
             <li class="list-group-item text-center py-4">
                 <i class="bi bi-exclamation-triangle-fill text-danger fs-2"></i>
+
                 <div class="mt-2">
                     Unable to load documents.
                 </div>
+
                 <small class="text-muted">
                     ${error.message}
                 </small>
