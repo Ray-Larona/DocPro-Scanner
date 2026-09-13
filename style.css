@@ -205,7 +205,7 @@ HOME / DASHBOARD
 .dashboard-card .text-muted,
 .dashboard-card p {
   font-size: 13px;
-  color: var(#ffd700) !important;
+  color: #ffd700 !important;
 }
 
 /* =========================================
