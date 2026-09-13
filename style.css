@@ -1,35 +1,36 @@
 /* =========================================
 DocPro Scanner V2
-Custom CSS
+Custom CSS - Dark Black-Blue & Tortoise Theme
 ========================================= */
 
 :root {
---docpro-primary: #1e3a8a;
---docpro-primary-dark: #172554;
---docpro-bg: #f8fafc;
---docpro-card: #ffffff;
---docpro-text: #0f172a;
---docpro-muted: #64748b;
---docpro-border: #cbd5e1;
---docpro-danger: #dc3545;
---docpro-success: #198754;
+  --docpro-primary: #c88a4b;
+  --docpro-primary-dark: #a16c37;
+  --docpro-bg: #090d16;
+  --docpro-card: #111827;
+  --docpro-text: #f8fafc;
+  --docpro-muted: #94a3b8;
+  --docpro-border: #1e293b;
+  --docpro-danger: #ef4444;
+  --docpro-success: #10b981;
+  --docpro-tortoise: #c88a4b;
 }
 
 * {
   box-sizing: border-box;
-  }
+}
 
 body {
-margin: 0;
-padding: 0;
-font-family: "Poppins", sans-serif;
-background: var(--docpro-bg);
-color: var(--docpro-text);
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  background: var(--docpro-bg);
+  color: var(--docpro-text);
 }
 
 button,
 input {
-font-family: inherit;
+  font-family: inherit;
 }
 
 /* =========================================
@@ -37,11 +38,11 @@ GENERAL
 ========================================= */
 
 #app {
-min-height: 100vh;
+  min-height: 100vh;
 }
 
 .hidden {
-display: none !important;
+  display: none !important;
 }
 
 /* =========================================
@@ -49,89 +50,97 @@ LOGIN SCREEN
 ========================================= */
 
 #loginScreen {
-background:
-radial-gradient(circle at top left, rgba(30, 58, 138, 0.15), transparent 35%),
-radial-gradient(circle at bottom right, rgba(51, 65, 85, 0.12), transparent 35%),
-var(--docpro-bg);
+  background:
+    radial-gradient(circle at top left, rgba(200, 138, 75, 0.18), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.8), transparent 35%),
+    var(--docpro-bg);
 }
 
 .login-card {
-width: 100%;
-max-width: 420px;
-padding: 40px 34px;
-background: rgba(255, 255, 255, 0.96);
-border-radius: 22px;
-border: 1px solid rgba(203, 213, 225, 0.8);
+  width: 100%;
+  max-width: 420px;
+  padding: 40px 34px;
+  background: rgba(17, 24, 39, 0.92);
+  border-radius: 22px;
+  border: 1px solid var(--docpro-border);
+  color: var(--docpro-text);
 }
 
 .logo-icon {
-width: 72px;
-height: 72px;
-margin: 0 auto 18px;
-display: flex;
-align-items: center;
-justify-content: center;
-border-radius: 20px;
-background: linear-gradient(
-135deg,
-var(--docpro-primary),
-#3b82f6
-);
-color: white;
-font-size: 34px;
-box-shadow: 0 12px 30px rgba(30, 58, 138, 0.25);
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background: linear-gradient(
+    135deg,
+    var(--docpro-primary),
+    #8b5cf6
+  );
+  color: #090d16;
+  font-size: 34px;
+  box-shadow: 0 12px 30px rgba(200, 138, 75, 0.25);
 }
 
 .logo-title {
-margin: 0;
-font-size: 30px;
-font-weight: 700;
-letter-spacing: -0.5px;
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--docpro-text);
 }
 
 .logo-subtitle {
-margin-top: 5px;
-color: var(--docpro-muted);
-font-size: 14px;
+  margin-top: 5px;
+  color: var(--docpro-muted);
+  font-size: 14px;
 }
 
 .logo-by {
-margin-top: 8px;
-color: var(--docpro-primary);
-font-size: 12px;
-font-weight: 600;
+  margin-top: 8px;
+  color: var(--docpro-primary);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 #loginScreen .form-label {
-font-size: 13px;
-font-weight: 600;
-color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--docpro-text);
 }
 
 #loginScreen .form-control {
-min-height: 48px;
-border-radius: 12px;
-border: 1px solid var(--docpro-border);
-padding: 10px 14px;
+  min-height: 48px;
+  border-radius: 12px;
+  border: 1px solid var(--docpro-border);
+  background: #1e293b;
+  color: var(--docpro-text);
+  padding: 10px 14px;
 }
 
 #loginScreen .form-control:focus {
-border-color: var(--docpro-primary);
-box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1);
+  border-color: var(--docpro-primary);
+  background: #1e293b;
+  color: var(--docpro-text);
+  box-shadow: 0 0 0 4px rgba(200, 138, 75, 0.15);
 }
 
 #loginBtn {
-min-height: 48px;
-border: none;
-border-radius: 12px;
-font-weight: 600;
-background: var(--docpro-primary);
-transition: 0.2s ease;
+  min-height: 48px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  background: var(--docpro-primary);
+  color: #090d16;
+  transition: 0.2s ease;
 }
 
 #loginBtn:hover {
-background: var(--docpro-primary-dark);
-transform: translateY(-1px);
+  background: var(--docpro-primary-dark);
+  color: #fff;
+  transform: translateY(-1px);
 }
 
 /* =========================================
@@ -139,57 +148,61 @@ HOME / DASHBOARD
 ========================================= */
 
 #homeScreen {
-min-height: 100vh;
-background: var(--docpro-bg);
+  min-height: 100vh;
+  background: var(--docpro-bg);
 }
 
 #homeScreen .container {
-max-width: 1150px;
+  max-width: 1150px;
 }
 
 #homeScreen h3 {
-color: var(--docpro-text);
+  color: var(--docpro-text);
 }
 
 .dashboard-card {
-height: 100%;
-padding: 28px 22px;
-background: var(--docpro-card);
-border: 1px solid var(--docpro-border);
-border-radius: 18px;
-cursor: pointer;
-text-align: center;
-transition:
-transform 0.2s ease,
-box-shadow 0.2s ease,
-border-color 0.2s ease;
+  height: 100%;
+  padding: 28px 22px;
+  background: var(--docpro-card);
+  border: 1px solid var(--docpro-border);
+  border-radius: 18px;
+  cursor: pointer;
+  text-align: center;
+  color: var(--docpro-text);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .dashboard-card:hover {
-transform: translateY(-5px);
-border-color: rgba(30, 58, 138, 0.3);
-box-shadow: 0 14px 35px rgba(15, 23, 42, 0.1);
+  transform: translateY(-5px);
+  border-color: var(--docpro-primary);
+  box-shadow: 0 14px 35px rgba(200, 138, 75, 0.12);
 }
 
 .dashboard-icon {
-width: 64px;
-height: 64px;
-margin: 0 auto 18px;
-display: flex;
-align-items: center;
-justify-content: center;
-border-radius: 18px;
-background: rgba(30, 58, 138, 0.1);
-font-size: 28px;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: rgba(200, 138, 75, 0.15);
+  color: var(--docpro-primary);
+  font-size: 28px;
 }
 
 .dashboard-card h5 {
-margin-bottom: 8px;
-font-weight: 600;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--docpro-text);
 }
 
 .dashboard-card .text-muted {
-font-size: 13px;
+  font-size: 13px;
+  color: var(--docpro-muted) !important;
 }
 
 /* =========================================
@@ -197,21 +210,21 @@ SCANNER SCREEN
 ========================================= */
 
 #scannerScreen {
-min-height: 100vh;
-background: #0f172a;
-color: white;
+  min-height: 100vh;
+  background: var(--docpro-bg);
+  color: white;
 }
 
 #scannerScreen .container {
-max-width: 1100px;
+  max-width: 1100px;
 }
 
 #scannerScreen h4 {
-font-weight: 600;
+  font-weight: 600;
 }
 
 #pageCount {
-font-size: 13px;
+  font-size: 13px;
 }
 
 /* =========================================
@@ -219,74 +232,53 @@ CAMERA AREA
 ========================================= */
 
 .camera-wrapper {
-    position: relative;
-
-    width: 100%;
-
-    overflow: hidden;
-
-    border-radius: 18px;
-
-    background: #000;
-
-    line-height: 0;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #000;
+  line-height: 0;
 }
-
 
 /* ==========================
    CAMERA VIDEO
 ========================== */
 
 #camera {
-    display: block;
-
-    width: 100%;
-
-    max-height: 65vh;
-
-    object-fit: cover;
-
-    background: #000;
-
-    border-radius: 18px;
+  display: block;
+  width: 100%;
+  max-height: 65vh;
+  object-fit: cover;
+  background: #000;
+  border-radius: 18px;
 }
-
 
 /* ==========================
    CAMERA OVERLAY
 ========================== */
 
 .camera-overlay {
-    position: absolute;
-
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    pointer-events: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
-
 
 /* ==========================
    SCAN FRAME
 ========================== */
 
 .scan-frame {
-    position: absolute;
-
-    top: 8%;
-    left: 8%;
-    right: 8%;
-    bottom: 8%;
-
-    border: 2px dashed rgba(255, 255, 255, 0.85);
-
-    border-radius: 10px;
-
-    pointer-events: none;
+  position: absolute;
+  top: 8%;
+  left: 8%;
+  right: 8%;
+  bottom: 8%;
+  border: 2px dashed rgba(200, 138, 75, 0.85);
+  border-radius: 10px;
+  pointer-events: none;
 }
-
 
 /* ==========================
    SCAN FRAME CORNERS
@@ -294,45 +286,37 @@ CAMERA AREA
 
 .scan-frame::before,
 .scan-frame::after {
-    content: "";
-
-    position: absolute;
-
-    width: 28px;
-    height: 28px;
-
-    border-color: #fff;
+  content: "";
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-color: var(--docpro-primary);
 }
-
 
 /* TOP LEFT */
 
 .scan-frame::before {
-    top: -2px;
-    left: -2px;
-
-    border-top: 4px solid;
-    border-left: 4px solid;
+  top: -2px;
+  left: -2px;
+  border-top: 4px solid;
+  border-left: 4px solid;
 }
-
 
 /* BOTTOM RIGHT */
 
 .scan-frame::after {
-    right: -2px;
-    bottom: -2px;
-
-    border-right: 4px solid;
-    border-bottom: 4px solid;
+  right: -2px;
+  bottom: -2px;
+  border-right: 4px solid;
+  border-bottom: 4px solid;
 }
-
 
 /* ==========================
    HIDDEN CANVAS
 ========================== */
 
 #canvas {
-    display: none;
+  display: none;
 }
 
 /* =========================================
@@ -340,83 +324,61 @@ SCANNER BUTTONS
 ========================================= */
 
 .scanner-buttons {
-    position: relative;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    width: 100%;
-
-    padding: 16px 24px;
-
-    min-height: 100px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 16px 24px;
+  min-height: 100px;
 }
-
 
 /* ==========================
    CAMERA BUTTON
 ========================== */
 
 #captureBtn {
-    width: 76px;
-    height: 76px;
-
-    border-radius: 50%;
-
-    border: 5px solid rgba(255, 255, 255, 0.8);
-
-    background: white;
-
-    color: var(--docpro-primary);
-
-    font-size: 28px;
-
-    display: inline-flex;
-
-    align-items: center;
-    justify-content: center;
-
-    box-shadow:
-        0 8px 25px rgba(0, 0, 0, 0.3);
-
-    transition: 0.15s ease;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 5px solid var(--docpro-primary);
+  background: var(--docpro-card);
+  color: var(--docpro-primary);
+  font-size: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 25px rgba(200, 138, 75, 0.25);
+  transition: 0.15s ease;
 }
-
 
 /* ==========================
    CONTINUE BUTTON
 ========================== */
 
 #continueBtn {
-    position: absolute;
-
-    right: 24px;
-
-    min-width: 125px;
-
-    padding: 10px 16px;
-
-    border-radius: 10px;
-
-    font-size: 15px;
-
-    font-weight: 600;
+  position: absolute;
+  right: 24px;
+  min-width: 125px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  background: var(--docpro-primary);
+  border: none;
+  color: #090d16;
 }
-
 
 /* ==========================
    BUTTON EFFECTS
 ========================== */
 
 #captureBtn:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 #captureBtn:active {
-    transform: scale(0.95);
+  transform: scale(0.95);
 }
 
 /* =========================================
@@ -424,63 +386,47 @@ THUMBNAILS
 ========================================= */
 
 #thumbnailContainer {
-    display: flex;
-    gap: 10px;
-    padding: 12px 0;
-    overflow-x: auto;
-    scrollbar-width: thin;
+  display: flex;
+  gap: 10px;
+  padding: 12px 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .thumbnail-item {
-    position: relative;
-    flex: 0 0 auto;
-
-    width: 82px;
-    height: 105px;
-
-    overflow: hidden;
-
-    border-radius: 8px;
-
-    border: 2px solid rgba(255, 255, 255, 0.25);
-
-    background: #000;
-
-    cursor: pointer;
+  position: relative;
+  flex: 0 0 auto;
+  width: 82px;
+  height: 105px;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 2px solid var(--docpro-primary);
+  background: #000;
+  cursor: pointer;
 }
 
 .thumbnail-item img {
-    display: block;
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .thumbnail-item .thumbnail-number {
-    position: absolute;
-
-    bottom: 4px;
-    left: 4px;
-
-    min-width: 22px;
-    height: 22px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0 5px;
-
-    border-radius: 50%;
-
-    background: rgba(0, 0, 0, 0.75);
-
-    color: white;
-
-    font-size: 11px;
-    font-weight: 600;
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  min-width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border-radius: 50%;
+  background: var(--docpro-primary);
+  color: #090d16;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 /* =========================================
@@ -488,22 +434,24 @@ PREVIEW MODAL
 ========================================= */
 
 #previewModal .modal-content {
-border: none;
-border-radius: 18px;
-overflow: hidden;
+  border: 1px solid var(--docpro-border);
+  background: var(--docpro-card);
+  color: var(--docpro-text);
+  border-radius: 18px;
+  overflow: hidden;
 }
 
 #previewImage {
-width: 100%;
-max-height: 75vh;
-object-fit: contain;
-background: #111;
+  width: 100%;
+  max-height: 75vh;
+  object-fit: contain;
+  background: #090d16;
 }
 
 #rotateBtn,
 #replaceBtn,
 #deleteBtn {
-border-radius: 10px;
+  border-radius: 10px;
 }
 
 /* =========================================
@@ -511,18 +459,19 @@ REVIEW SCREEN
 ========================================= */
 
 #reviewScreen {
-    min-height: 100vh;
-    background: var(--docpro-bg);
+  min-height: 100vh;
+  background: var(--docpro-bg);
+  color: var(--docpro-text);
 }
 
 #reviewScreen .container {
-    max-width: 1100px;
+  max-width: 1100px;
 }
 
 #reviewContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-    gap: 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 18px;
 }
 
 /* ==========================
@@ -530,20 +479,13 @@ REVIEW SCREEN
 ========================== */
 
 .review-card {
-    position: relative;
-
-    overflow: hidden;
-
-    background: white;
-
-    border: 1px solid var(--docpro-border);
-
-    border-radius: 14px;
-
-    box-shadow:
-        0 5px 18px rgba(15, 23, 42, 0.06);
-
-    padding: 15px;
+  position: relative;
+  overflow: hidden;
+  background: var(--docpro-card);
+  border: 1px solid var(--docpro-border);
+  border-radius: 14px;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.3);
+  padding: 15px;
 }
 
 /* ==========================
@@ -551,17 +493,12 @@ REVIEW SCREEN
 ========================== */
 
 .review-card img {
-    display: block;
-
-    width: 100%;
-
-    height: 240px;
-
-    object-fit: contain;
-
-    background: #f8fafc;
-
-    border-radius: 8px;
+  display: block;
+  width: 100%;
+  height: 240px;
+  object-fit: contain;
+  background: #090d16;
+  border-radius: 8px;
 }
 
 /* ==========================
@@ -569,29 +506,29 @@ REVIEW SCREEN
 ========================== */
 
 @media (max-width: 768px) {
-
-    .review-card img {
-        height: 190px;
-    }
-
+  .review-card img {
+    height: 190px;
+  }
 }
 
 @media (max-width: 480px) {
-
-    .review-card img {
-        height: 165px;
-    }
-
+  .review-card img {
+    height: 165px;
+  }
 }
+
 /* =========================================
 CREATE PDF BUTTON
 ========================================= */
 
 #uploadDriveBtn {
-min-height: 48px;
-border-radius: 12px;
-font-weight: 600;
-padding: 10px 24px;
+  min-height: 48px;
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 10px 24px;
+  background: var(--docpro-primary);
+  border: none;
+  color: #090d16;
 }
 
 /* =========================================
@@ -599,27 +536,29 @@ LOADING OVERLAY
 ========================================= */
 
 #loadingOverlay {
-position: fixed;
-inset: 0;
-z-index: 9999;
-display: flex;
-align-items: center;
-justify-content: center;
-background: rgba(15, 23, 42, 0.85);
-backdrop-filter: blur(5px);
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(9, 13, 22, 0.88);
+  backdrop-filter: blur(5px);
 }
 
 #loadingOverlay .loading-box {
-width: min(90%, 400px);
-padding: 30px;
-text-align: center;
-background: white;
-border-radius: 18px;
+  width: min(90%, 400px);
+  padding: 30px;
+  text-align: center;
+  background: var(--docpro-card);
+  border: 1px solid var(--docpro-border);
+  color: var(--docpro-text);
+  border-radius: 18px;
 }
 
 #loadingProgress {
-font-size: 14px;
-color: var(--docpro-muted);
+  font-size: 14px;
+  color: var(--docpro-muted);
 }
 
 /* =========================================
@@ -627,13 +566,15 @@ SUCCESS MODAL
 ========================================= */
 
 #successModal .modal-content {
-border: none;
-border-radius: 18px;
+  border: 1px solid var(--docpro-border);
+  background: var(--docpro-card);
+  color: var(--docpro-text);
+  border-radius: 18px;
 }
 
 #successModal .modal-body {
-padding: 35px 25px;
-text-align: center;
+  padding: 35px 25px;
+  text-align: center;
 }
 
 /* =========================================
@@ -641,80 +582,76 @@ MOBILE
 ========================================= */
 
 @media (max-width: 768px) {
-
-.login-card {
+  .login-card {
     max-width: 92%;
     padding: 30px 22px;
     border-radius: 18px;
-}
+  }
 
-.logo-title {
+  .logo-title {
     font-size: 26px;
-}
+  }
 
-#camera {
+  #camera {
     max-height: 58vh;
     border-radius: 12px;
-}
+  }
 
-.camera-wrapper {
+  .camera-wrapper {
     border-radius: 12px;
-}
+  }
 
-.scan-frame {
+  .scan-frame {
     top: 6%;
     left: 6%;
     right: 6%;
     bottom: 6%;
-}
+  }
   
-#captureBtn {
+  #captureBtn {
     width: 68px;
     height: 68px;
     font-size: 24px;
-}
-#continueBtn {
+  }
+  #continueBtn {
     right: 15px;
     min-width: 105px;
     padding: 8px 12px;
     font-size: 13px;
-}
+  }
 
-#reviewContainer {
+  #reviewContainer {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
-}
+  }
 
-.review-card img {
+  .review-card img {
     height: 190px;
-}
-
+  }
 }
 
 @media (max-width: 480px) {
-
-.login-card {
+  .login-card {
     padding: 26px 18px;
-}
+  }
 
-.logo-icon {
+  .logo-icon {
     width: 62px;
     height: 62px;
     font-size: 28px;
-}
+  }
 
-.logo-title {
+  .logo-title {
     font-size: 23px;
-}
+  }
 
-#reviewContainer {
+  #reviewContainer {
     grid-template-columns: 1fr 1fr;
-}
+  }
 
-.review-card img {
+  .review-card img {
     height: 165px;
-}
-
+  }
 }
 
 /* =========================================
@@ -723,14 +660,14 @@ TOUCH / MOBILE UX
 
 button,
 .dashboard-card {
--webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: transparent;
 }
 
 @media (hover: none) {
-.dashboard-card:hover {
-transform: none;
-box-shadow: none;
-}
+  .dashboard-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
 }
 
 /* =========================================
@@ -738,19 +675,19 @@ SCROLLBAR
 ========================================= */
 
 ::-webkit-scrollbar {
-width: 7px;
-height: 7px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-background: transparent;
+  background: #090d16;
 }
 
 ::-webkit-scrollbar-thumb {
-background: #94a3b8;
-border-radius: 20px;
+  background: var(--docpro-primary);
+  border-radius: 20px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-background: #64748b;
+  background: var(--docpro-primary-dark);
 }
