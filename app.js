@@ -136,9 +136,9 @@ async function loadDocuments() {
 
         documentsList.innerHTML = "";
 
-        documents.forEach(function (document) {
+        documents.forEach(function (doc) {
 
-            const date = new Date(document.date);
+            const date = new Date(doc.date);
 
             const formattedDate = date.toLocaleString("en-SG", {
                 year: "numeric",
@@ -157,7 +157,7 @@ async function loadDocuments() {
                 <div class="me-3">
                     <div class="fw-semibold">
                         <i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i>
-                        ${document.fileName}
+                        ${doc.fileName}
                     </div>
 
                     <small class="text-muted">
@@ -166,7 +166,7 @@ async function loadDocuments() {
                 </div>
 
                 <a
-                    href="${document.url}"
+                    href="${doc.url}"
                     target="_blank"
                     class="btn btn-warning btn-sm"
                 >
