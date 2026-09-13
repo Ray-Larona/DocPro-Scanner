@@ -4,13 +4,13 @@ Custom CSS
 ========================================= */
 
 :root {
---docpro-primary: #2563eb;
---docpro-primary-dark: #1d4ed8;
---docpro-bg: #f4f7fb;
+--docpro-primary: #1e3a8a;
+--docpro-primary-dark: #172554;
+--docpro-bg: #f8fafc;
 --docpro-card: #ffffff;
---docpro-text: #1f2937;
---docpro-muted: #6b7280;
---docpro-border: #e5e7eb;
+--docpro-text: #0f172a;
+--docpro-muted: #64748b;
+--docpro-border: #cbd5e1;
 --docpro-danger: #dc3545;
 --docpro-success: #198754;
 }
@@ -50,8 +50,8 @@ LOGIN SCREEN
 
 #loginScreen {
 background:
-radial-gradient(circle at top left, rgba(37, 99, 235, 0.15), transparent 35%),
-radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.12), transparent 35%),
+radial-gradient(circle at top left, rgba(30, 58, 138, 0.15), transparent 35%),
+radial-gradient(circle at bottom right, rgba(51, 65, 85, 0.12), transparent 35%),
 var(--docpro-bg);
 }
 
@@ -61,7 +61,7 @@ max-width: 420px;
 padding: 40px 34px;
 background: rgba(255, 255, 255, 0.96);
 border-radius: 22px;
-border: 1px solid rgba(229, 231, 235, 0.8);
+border: 1px solid rgba(203, 213, 225, 0.8);
 }
 
 .logo-icon {
@@ -75,11 +75,11 @@ border-radius: 20px;
 background: linear-gradient(
 135deg,
 var(--docpro-primary),
-#60a5fa
+#3b82f6
 );
 color: white;
 font-size: 34px;
-box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25);
+box-shadow: 0 12px 30px rgba(30, 58, 138, 0.25);
 }
 
 .logo-title {
@@ -105,7 +105,7 @@ font-weight: 600;
 #loginScreen .form-label {
 font-size: 13px;
 font-weight: 600;
-color: #374151;
+color: #334155;
 }
 
 #loginScreen .form-control {
@@ -117,7 +117,7 @@ padding: 10px 14px;
 
 #loginScreen .form-control:focus {
 border-color: var(--docpro-primary);
-box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1);
 }
 
 #loginBtn {
@@ -167,7 +167,7 @@ border-color 0.2s ease;
 
 .dashboard-card:hover {
 transform: translateY(-5px);
-border-color: rgba(37, 99, 235, 0.3);
+border-color: rgba(30, 58, 138, 0.3);
 box-shadow: 0 14px 35px rgba(15, 23, 42, 0.1);
 }
 
@@ -179,7 +179,7 @@ display: flex;
 align-items: center;
 justify-content: center;
 border-radius: 18px;
-background: rgba(37, 99, 235, 0.1);
+background: rgba(30, 58, 138, 0.1);
 font-size: 28px;
 }
 
@@ -198,7 +198,7 @@ SCANNER SCREEN
 
 #scannerScreen {
 min-height: 100vh;
-background: #111827;
+background: #0f172a;
 color: white;
 }
 
@@ -559,7 +559,7 @@ REVIEW SCREEN
 
     object-fit: contain;
 
-    background: #f3f4f6;
+    background: #f8fafc;
 
     border-radius: 8px;
 }
@@ -605,7 +605,7 @@ z-index: 9999;
 display: flex;
 align-items: center;
 justify-content: center;
-background: rgba(17, 24, 39, 0.82);
+background: rgba(15, 23, 42, 0.85);
 backdrop-filter: blur(5px);
 }
 
@@ -642,7 +642,6 @@ MOBILE
 
 @media (max-width: 768px) {
 
-```
 .login-card {
     max-width: 92%;
     padding: 30px 22px;
@@ -689,13 +688,11 @@ MOBILE
 .review-card img {
     height: 190px;
 }
-```
 
 }
 
 @media (max-width: 480px) {
 
-```
 .login-card {
     padding: 26px 18px;
 }
@@ -717,7 +714,6 @@ MOBILE
 .review-card img {
     height: 165px;
 }
-```
 
 }
 
@@ -751,10 +747,10 @@ background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-background: #cbd5e1;
+background: #94a3b8;
 border-radius: 20px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-background: #94a3b8;
+background: #64748b;
 }
