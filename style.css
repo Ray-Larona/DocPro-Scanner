@@ -150,6 +150,7 @@ HOME / DASHBOARD
 #homeScreen {
   min-height: 100vh;
   background: var(--docpro-bg);
+  color: var(--docpro-text);
 }
 
 #homeScreen .container {
@@ -157,7 +158,8 @@ HOME / DASHBOARD
 }
 
 #homeScreen h3 {
-  color: var(--docpro-text);
+  color: var(--docpro-text) !important;
+  font-weight: 700;
 }
 
 .dashboard-card {
@@ -197,10 +199,11 @@ HOME / DASHBOARD
 .dashboard-card h5 {
   margin-bottom: 8px;
   font-weight: 600;
-  color: var(--docpro-text);
+  color: #ffffff !important;
 }
 
-.dashboard-card .text-muted {
+.dashboard-card .text-muted,
+.dashboard-card p {
   font-size: 13px;
   color: var(--docpro-muted) !important;
 }
