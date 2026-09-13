@@ -74,9 +74,126 @@ document.getElementById("scanCard").addEventListener("click", function () {
     history.pushState({ screen: "scanner" }, "", location.href);
 });
 
+/* DOCUMENTS HISTORY */
+
 document.getElementById("documentsCard").addEventListener("click", function () {
-    alert("Documents clicked!");
+    loadDocuments();
 });
+
+
+async function loadDocuments() {
+
+    const documentsList = document.getElementById("documentsList");
+
+    documentsList.innerHTML = `
+        <li class="list-group-item text-center py-4">
+            <div class="spinner-border text-warning mb-2" role="status"></div>
+            <div>Loading documents...</div>
+        </li>
+    `;
+
+    const documentsModal = bootstrap.Modal.getOrCreateInstance(
+        document.getElementById("documentsModal")
+    );
+
+    documentsModal.show();
+
+    try {
+
+        const payload = JSON.stringify({
+            action: "listDocuments"
+        });
+
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: payload
+        });
+
+        const result = await response.json();
+
+        if (result.status !== "success") {
+            throw new Error(result.message || "Unable to load documents");
+        }
+
+        const documents = result.data.documents || [];
+
+        if (documents.length === 0) {
+
+            documentsList.innerHTML = `
+                <li class="list-group-item text-center py-4">
+                    <i class="bi bi-folder2-open display-5 text-warning"></i>
+                    <div class="mt-2">
+                        No documents found.
+                    </div>
+                </li>
+            `;
+
+            return;
+        }
+
+        documentsList.innerHTML = "";
+
+        documents.forEach(function (document) {
+
+            const date = new Date(document.date);
+
+            const formattedDate = date.toLocaleString("en-SG", {
+                year: "numeric",
+                month: "short",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+
+            const item = document.createElement("li");
+
+            item.className =
+                "list-group-item d-flex justify-content-between align-items-center";
+
+            item.innerHTML = `
+                <div class="me-3">
+                    <div class="fw-semibold">
+                        <i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i>
+                        ${document.fileName}
+                    </div>
+
+                    <small class="text-muted">
+                        ${formattedDate}
+                    </small>
+                </div>
+
+                <a
+                    href="${document.url}"
+                    target="_blank"
+                    class="btn btn-warning btn-sm"
+                >
+                    <i class="bi bi-eye-fill"></i> View
+                </a>
+            `;
+
+            documentsList.appendChild(item);
+        });
+
+    } catch (error) {
+
+        console.error("Documents loading error:", error);
+
+        documentsList.innerHTML = `
+            <li class="list-group-item text-center py-4">
+                <i class="bi bi-exclamation-triangle-fill text-danger fs-2"></i>
+                <div class="mt-2">
+                    Unable to load documents.
+                </div>
+                <small class="text-muted">
+                    ${error.message}
+                </small>
+            </li>
+        `;
+    }
+}
 
 document.getElementById("logoutCard").addEventListener("click", function () {
     stopCamera();
