@@ -694,3 +694,6 @@ SCROLLBAR
 ::-webkit-scrollbar-thumb:hover {
   background: var(--docpro-primary-dark);
 }
+small.text-muted {
+  color: var(--docpro-primary) !important; /* O gamitin ang #ffd700 kung mas gusto mo ng pure yellow gold */
+}
