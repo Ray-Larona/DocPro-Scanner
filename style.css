@@ -1,20 +1,35 @@
 /* =========================================
 DocPro Scanner V2
-Custom CSS - Dark Black-Blue & Tortoise Theme
+Custom CSS - Dark Black & Yellow Theme
 ========================================= */
 
 :root {
-  --docpro-primary: #c88a4b;
-  --docpro-primary-dark: #a16c37;
-  --docpro-bg: #090d16;
-  --docpro-card: #111827;
+  /* ===== PRIMARY COLORS ===== */
+  --docpro-primary: #facc15;
+  --docpro-primary-dark: #eab308;
+  --docpro-bg: #05070b;
+  --docpro-card: #0d1117;
+  --docpro-card-light: #111827;
+
+  /* ===== TEXT ===== */
   --docpro-text: #f8fafc;
-  --docpro-muted: #eab308;
-  --docpro-border: #1e293b;
+  --docpro-muted: #facc15;
+
+  /* ===== BORDER ===== */
+  --docpro-border: #252b36;
+
+  /* ===== STATUS ===== */
   --docpro-danger: #ef4444;
   --docpro-success: #10b981;
-  --docpro-tortoise: #c88a4b;
+
+  /* ===== GOLD ===== */
+  --docpro-yellow: #facc15;
+  --docpro-yellow-dark: #ca8a04;
 }
+
+/* =========================================
+GENERAL
+========================================= */
 
 * {
   box-sizing: border-box;
@@ -33,10 +48,6 @@ input {
   font-family: inherit;
 }
 
-/* =========================================
-GENERAL
-========================================= */
-
 #app {
   min-height: 100vh;
 }
@@ -51,8 +62,16 @@ LOGIN SCREEN
 
 #loginScreen {
   background:
-    radial-gradient(circle at top left, rgba(200, 138, 75, 0.18), transparent 35%),
-    radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.8), transparent 35%),
+    radial-gradient(
+      circle at top left,
+      rgba(250, 204, 21, 0.16),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(15, 23, 42, 0.9),
+      transparent 40%
+    ),
     var(--docpro-bg);
 }
 
@@ -60,87 +79,144 @@ LOGIN SCREEN
   width: 100%;
   max-width: 420px;
   padding: 40px 34px;
-  background: rgba(17, 24, 39, 0.92);
+
+  background: rgba(13, 17, 23, 0.96);
+
   border-radius: 22px;
   border: 1px solid var(--docpro-border);
+
   color: var(--docpro-text);
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.45),
+    0 0 40px rgba(250, 204, 21, 0.04);
 }
+
+/* =========================================
+LOGO
+========================================= */
 
 .logo-icon {
   width: 72px;
   height: 72px;
   margin: 0 auto 18px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   border-radius: 20px;
+
   background: linear-gradient(
     135deg,
-    var(--docpro-primary),
-    #8b5cf6
+    #facc15,
+    #eab308
   );
-  color: #090d16;
+
+  color: #05070b;
+
   font-size: 34px;
-  box-shadow: 0 12px 30px rgba(200, 138, 75, 0.25);
+
+  box-shadow:
+    0 12px 30px rgba(250, 204, 21, 0.25);
 }
 
 .logo-title {
   margin: 0;
+
   font-size: 30px;
   font-weight: 700;
   letter-spacing: -0.5px;
-  color: var(--docpro-text);
+
+  color: #ffffff;
 }
 
 .logo-subtitle {
   margin-top: 5px;
-  color: var(--docpro-muted);
+
+  color: #facc15;
+
   font-size: 14px;
 }
 
 .logo-by {
   margin-top: 8px;
-  color: var(--docpro-primary);
+
+  color: #eab308;
+
   font-size: 12px;
   font-weight: 600;
 }
 
+/* =========================================
+LOGIN FORM
+========================================= */
+
 #loginScreen .form-label {
   font-size: 13px;
   font-weight: 600;
-  color: var(--docpro-text);
+
+  color: #f8fafc;
 }
 
 #loginScreen .form-control {
   min-height: 48px;
+
   border-radius: 12px;
-  border: 1px solid var(--docpro-border);
-  background: #1e293b;
-  color: var(--docpro-text);
+  border: 1px solid #252b36;
+
+  background: #111827;
+
+  color: #ffffff;
+
   padding: 10px 14px;
 }
 
-#loginScreen .form-control:focus {
-  border-color: var(--docpro-primary);
-  background: #1e293b;
-  color: var(--docpro-text);
-  box-shadow: 0 0 0 4px rgba(200, 138, 75, 0.15);
+#loginScreen .form-control::placeholder {
+  color: #64748b;
 }
+
+#loginScreen .form-control:focus {
+  border-color: #facc15;
+
+  background: #111827;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 0 0 4px rgba(250, 204, 21, 0.12);
+}
+
+/* =========================================
+LOGIN BUTTON
+========================================= */
 
 #loginBtn {
   min-height: 48px;
+
   border: none;
   border-radius: 12px;
+
   font-weight: 600;
-  background: var(--docpro-primary);
-  color: #090d16;
+
+  background: #facc15;
+  color: #05070b;
+
   transition: 0.2s ease;
+
+  box-shadow:
+    0 8px 20px rgba(250, 204, 21, 0.15);
 }
 
 #loginBtn:hover {
-  background: var(--docpro-primary-dark);
-  color: #fff;
+  background: #eab308;
+
+  color: #000000;
+
   transform: translateY(-1px);
+
+  box-shadow:
+    0 10px 25px rgba(250, 204, 21, 0.25);
 }
 
 /* =========================================
@@ -149,8 +225,10 @@ HOME / DASHBOARD
 
 #homeScreen {
   min-height: 100vh;
-  background: var(--docpro-bg);
-  color: var(--docpro-text);
+
+  background: #05070b;
+
+  color: #f8fafc;
 }
 
 #homeScreen .container {
@@ -158,54 +236,87 @@ HOME / DASHBOARD
 }
 
 #homeScreen h3 {
-  color: var(--docpro-text) !important;
+  color: #ffffff !important;
+
   font-weight: 700;
 }
 
+/* =========================================
+DASHBOARD CARD
+========================================= */
+
 .dashboard-card {
   height: 100%;
+
   padding: 28px 22px;
-  background: var(--docpro-card);
-  border: 1px solid var(--docpro-border);
+
+  background: #0d1117;
+
+  border: 1px solid #252b36;
   border-radius: 18px;
+
   cursor: pointer;
+
   text-align: center;
-  color: var(--docpro-text);
+
+  color: #ffffff;
+
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
-    border-color 0.2s ease;
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
 .dashboard-card:hover {
   transform: translateY(-5px);
-  border-color: var(--docpro-primary);
-  box-shadow: 0 14px 35px rgba(200, 138, 75, 0.12);
+
+  background: #111827;
+
+  border-color: #facc15;
+
+  box-shadow:
+    0 14px 35px rgba(250, 204, 21, 0.10);
 }
+
+/* =========================================
+DASHBOARD ICON
+========================================= */
 
 .dashboard-icon {
   width: 64px;
   height: 64px;
+
   margin: 0 auto 18px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   border-radius: 18px;
-  background: rgba(200, 138, 75, 0.15);
-  color: var(--docpro-primary);
+
+  background: rgba(250, 204, 21, 0.10);
+
+  color: #facc15;
+
   font-size: 28px;
+
+  border: 1px solid rgba(250, 204, 21, 0.15);
 }
 
 .dashboard-card h5 {
   margin-bottom: 8px;
+
   font-weight: 600;
+
   color: #ffffff !important;
 }
 
 .dashboard-card .text-muted,
 .dashboard-card p {
   font-size: 13px;
-  color: var(--docpro-muted) !important;
+
+  color: #facc15 !important;
 }
 
 /* =========================================
@@ -214,8 +325,10 @@ SCANNER SCREEN
 
 #scannerScreen {
   min-height: 100vh;
-  background: var(--docpro-bg);
-  color: white;
+
+  background: #05070b;
+
+  color: #ffffff;
 }
 
 #scannerScreen .container {
@@ -224,10 +337,14 @@ SCANNER SCREEN
 
 #scannerScreen h4 {
   font-weight: 600;
+
+  color: #ffffff;
 }
 
 #pageCount {
   font-size: 13px;
+
+  color: #facc15;
 }
 
 /* =========================================
@@ -236,64 +353,92 @@ CAMERA AREA
 
 .camera-wrapper {
   position: relative;
+
   width: 100%;
+
   overflow: hidden;
+
   border-radius: 18px;
-  background: #000;
+
+  background: #000000;
+
   line-height: 0;
+
+  border: 1px solid #252b36;
+
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.35);
 }
 
-/* ==========================
-   CAMERA VIDEO
-========================== */
+/* =========================================
+CAMERA VIDEO
+========================================= */
 
 #camera {
   display: block;
+
   width: 100%;
+
   max-height: 65vh;
+
   object-fit: cover;
-  background: #000;
+
+  background: #000000;
+
   border-radius: 18px;
 }
 
-/* ==========================
-   CAMERA OVERLAY
-========================== */
+/* =========================================
+CAMERA OVERLAY
+========================================= */
 
 .camera-overlay {
   position: absolute;
+
   inset: 0;
+
   width: 100%;
   height: 100%;
+
   pointer-events: none;
 }
 
-/* ==========================
-   SCAN FRAME
-========================== */
+/* =========================================
+SCAN FRAME
+========================================= */
 
 .scan-frame {
   position: absolute;
+
   top: 8%;
   left: 8%;
   right: 8%;
   bottom: 8%;
-  border: 2px dashed rgba(200, 138, 75, 0.85);
+
+  border: 2px dashed rgba(250, 204, 21, 0.85);
+
   border-radius: 10px;
+
   pointer-events: none;
+
+  box-shadow:
+    0 0 20px rgba(250, 204, 21, 0.06);
 }
 
-/* ==========================
-   SCAN FRAME CORNERS
-========================== */
+/* =========================================
+SCAN FRAME CORNERS
+========================================= */
 
 .scan-frame::before,
 .scan-frame::after {
   content: "";
+
   position: absolute;
+
   width: 28px;
   height: 28px;
-  border-color: var(--docpro-primary);
+
+  border-color: #facc15;
 }
 
 /* TOP LEFT */
@@ -301,6 +446,7 @@ CAMERA AREA
 .scan-frame::before {
   top: -2px;
   left: -2px;
+
   border-top: 4px solid;
   border-left: 4px solid;
 }
@@ -310,13 +456,14 @@ CAMERA AREA
 .scan-frame::after {
   right: -2px;
   bottom: -2px;
+
   border-right: 4px solid;
   border-bottom: 4px solid;
 }
 
-/* ==========================
-   HIDDEN CANVAS
-========================== */
+/* =========================================
+HIDDEN CANVAS
+========================================= */
 
 #canvas {
   display: none;
@@ -328,60 +475,98 @@ SCANNER BUTTONS
 
 .scanner-buttons {
   position: relative;
+
   display: flex;
+
   align-items: center;
   justify-content: center;
+
   width: 100%;
+
   padding: 16px 24px;
+
   min-height: 100px;
 }
 
-/* ==========================
-   CAMERA BUTTON
-========================== */
+/* =========================================
+CAMERA BUTTON
+========================================= */
 
 #captureBtn {
   width: 76px;
   height: 76px;
+
   border-radius: 50%;
-  border: 5px solid var(--docpro-primary);
-  background: var(--docpro-card);
-  color: var(--docpro-primary);
+
+  border: 5px solid #facc15;
+
+  background: #0d1117;
+
+  color: #facc15;
+
   font-size: 28px;
+
   display: inline-flex;
+
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 25px rgba(200, 138, 75, 0.25);
+
+  box-shadow:
+    0 8px 25px rgba(250, 204, 21, 0.20);
+
   transition: 0.15s ease;
 }
 
-/* ==========================
-   CONTINUE BUTTON
-========================== */
-
-#continueBtn {
-  position: absolute;
-  right: 24px;
-  min-width: 125px;
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
-  background: var(--docpro-primary);
-  border: none;
-  color: #090d16;
-}
-
-/* ==========================
-   BUTTON EFFECTS
-========================== */
-
 #captureBtn:hover {
   transform: scale(1.05);
+
+  background: #111827;
+
+  box-shadow:
+    0 10px 30px rgba(250, 204, 21, 0.30);
 }
 
 #captureBtn:active {
   transform: scale(0.95);
+}
+
+/* =========================================
+CONTINUE BUTTON
+========================================= */
+
+#continueBtn {
+  position: absolute;
+
+  right: 24px;
+
+  min-width: 125px;
+
+  padding: 10px 16px;
+
+  border-radius: 10px;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  background: #facc15;
+
+  border: none;
+
+  color: #05070b;
+
+  box-shadow:
+    0 7px 18px rgba(250, 204, 21, 0.15);
+
+  transition: 0.2s ease;
+}
+
+#continueBtn:hover {
+  background: #eab308;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 10px 22px rgba(250, 204, 21, 0.22);
 }
 
 /* =========================================
@@ -390,45 +575,77 @@ THUMBNAILS
 
 #thumbnailContainer {
   display: flex;
+
   gap: 10px;
+
   padding: 12px 0;
+
   overflow-x: auto;
+
   scrollbar-width: thin;
 }
 
 .thumbnail-item {
   position: relative;
+
   flex: 0 0 auto;
+
   width: 82px;
   height: 105px;
+
   overflow: hidden;
+
   border-radius: 8px;
-  border: 2px solid var(--docpro-primary);
-  background: #000;
+
+  border: 2px solid #facc15;
+
+  background: #000000;
+
   cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.thumbnail-item:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 5px 15px rgba(250, 204, 21, 0.15);
 }
 
 .thumbnail-item img {
   display: block;
+
   width: 100%;
   height: 100%;
+
   object-fit: cover;
 }
 
 .thumbnail-item .thumbnail-number {
   position: absolute;
+
   bottom: 4px;
   left: 4px;
+
   min-width: 22px;
   height: 22px;
+
   display: flex;
+
   align-items: center;
   justify-content: center;
+
   padding: 0 5px;
+
   border-radius: 50%;
-  background: var(--docpro-primary);
-  color: #090d16;
+
+  background: #facc15;
+
+  color: #05070b;
+
   font-size: 11px;
+
   font-weight: 700;
 }
 
@@ -437,18 +654,25 @@ PREVIEW MODAL
 ========================================= */
 
 #previewModal .modal-content {
-  border: 1px solid var(--docpro-border);
-  background: var(--docpro-card);
-  color: var(--docpro-text);
+  border: 1px solid #252b36;
+
+  background: #0d1117;
+
+  color: #f8fafc;
+
   border-radius: 18px;
+
   overflow: hidden;
 }
 
 #previewImage {
   width: 100%;
+
   max-height: 75vh;
+
   object-fit: contain;
-  background: #090d16;
+
+  background: #05070b;
 }
 
 #rotateBtn,
@@ -463,8 +687,10 @@ REVIEW SCREEN
 
 #reviewScreen {
   min-height: 100vh;
-  background: var(--docpro-bg);
-  color: var(--docpro-text);
+
+  background: #05070b;
+
+  color: #f8fafc;
 }
 
 #reviewScreen .container {
@@ -473,51 +699,59 @@ REVIEW SCREEN
 
 #reviewContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+
+  grid-template-columns:
+    repeat(auto-fill, minmax(190px, 1fr));
+
   gap: 18px;
 }
 
-/* ==========================
-   REVIEW CARD
-========================== */
+/* =========================================
+REVIEW CARD
+========================================= */
 
 .review-card {
   position: relative;
+
   overflow: hidden;
-  background: var(--docpro-card);
-  border: 1px solid var(--docpro-border);
+
+  background: #0d1117;
+
+  border: 1px solid #252b36;
+
   border-radius: 14px;
-  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.3);
+
+  box-shadow:
+    0 5px 18px rgba(0, 0, 0, 0.3);
+
   padding: 15px;
+
+  transition: 0.2s ease;
 }
 
-/* ==========================
-   REVIEW IMAGE
-========================== */
+.review-card:hover {
+  border-color: rgba(250, 204, 21, 0.55);
+
+  box-shadow:
+    0 8px 25px rgba(250, 204, 21, 0.08);
+}
+
+/* =========================================
+REVIEW IMAGE
+========================================= */
 
 .review-card img {
   display: block;
+
   width: 100%;
+
   height: 240px;
+
   object-fit: contain;
-  background: #090d16;
+
+  background: #05070b;
+
   border-radius: 8px;
-}
-
-/* ==========================
-   MOBILE
-========================== */
-
-@media (max-width: 768px) {
-  .review-card img {
-    height: 190px;
-  }
-}
-
-@media (max-width: 480px) {
-  .review-card img {
-    height: 165px;
-  }
 }
 
 /* =========================================
@@ -526,12 +760,32 @@ CREATE PDF BUTTON
 
 #uploadDriveBtn {
   min-height: 48px;
+
   border-radius: 12px;
+
   font-weight: 600;
+
   padding: 10px 24px;
-  background: var(--docpro-primary);
+
+  background: #facc15;
+
   border: none;
-  color: #090d16;
+
+  color: #05070b;
+
+  box-shadow:
+    0 7px 18px rgba(250, 204, 21, 0.15);
+
+  transition: 0.2s ease;
+}
+
+#uploadDriveBtn:hover {
+  background: #eab308;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 10px 25px rgba(250, 204, 21, 0.22);
 }
 
 /* =========================================
@@ -540,28 +794,44 @@ LOADING OVERLAY
 
 #loadingOverlay {
   position: fixed;
+
   inset: 0;
+
   z-index: 9999;
+
   display: flex;
+
   align-items: center;
   justify-content: center;
-  background: rgba(9, 13, 22, 0.88);
-  backdrop-filter: blur(5px);
+
+  background: rgba(5, 7, 11, 0.90);
+
+  backdrop-filter: blur(6px);
 }
 
 #loadingOverlay .loading-box {
   width: min(90%, 400px);
+
   padding: 30px;
+
   text-align: center;
-  background: var(--docpro-card);
-  border: 1px solid var(--docpro-border);
-  color: var(--docpro-text);
+
+  background: #0d1117;
+
+  border: 1px solid #252b36;
+
+  color: #f8fafc;
+
   border-radius: 18px;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.45);
 }
 
 #loadingProgress {
   font-size: 14px;
-  color: var(--docpro-muted);
+
+  color: #facc15;
 }
 
 /* =========================================
@@ -569,15 +839,27 @@ SUCCESS MODAL
 ========================================= */
 
 #successModal .modal-content {
-  border: 1px solid var(--docpro-border);
-  background: var(--docpro-card);
-  color: var(--docpro-text);
+  border: 1px solid #252b36;
+
+  background: #0d1117;
+
+  color: #f8fafc;
+
   border-radius: 18px;
 }
 
 #successModal .modal-body {
   padding: 35px 25px;
+
   text-align: center;
+}
+
+/* =========================================
+SUCCESS ICON
+========================================= */
+
+#successModal .text-success {
+  color: #facc15 !important;
 }
 
 /* =========================================
@@ -585,9 +867,12 @@ MOBILE
 ========================================= */
 
 @media (max-width: 768px) {
+
   .login-card {
     max-width: 92%;
+
     padding: 30px 22px;
+
     border-radius: 18px;
   }
 
@@ -597,6 +882,7 @@ MOBILE
 
   #camera {
     max-height: 58vh;
+
     border-radius: 12px;
   }
 
@@ -610,21 +896,27 @@ MOBILE
     right: 6%;
     bottom: 6%;
   }
-  
+
   #captureBtn {
     width: 68px;
     height: 68px;
+
     font-size: 24px;
   }
+
   #continueBtn {
     right: 15px;
+
     min-width: 105px;
+
     padding: 8px 12px;
+
     font-size: 13px;
   }
 
   #reviewContainer {
     grid-template-columns: repeat(2, 1fr);
+
     gap: 12px;
   }
 
@@ -634,6 +926,7 @@ MOBILE
 }
 
 @media (max-width: 480px) {
+
   .login-card {
     padding: 26px 18px;
   }
@@ -641,6 +934,7 @@ MOBILE
   .logo-icon {
     width: 62px;
     height: 62px;
+
     font-size: 28px;
   }
 
@@ -667,8 +961,10 @@ button,
 }
 
 @media (hover: none) {
+
   .dashboard-card:hover {
     transform: none;
+
     box-shadow: none;
   }
 }
@@ -683,17 +979,65 @@ SCROLLBAR
 }
 
 ::-webkit-scrollbar-track {
-  background: #090d16;
+  background: #05070b;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--docpro-primary);
+  background: #facc15;
+
   border-radius: 20px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--docpro-primary-dark);
+  background: #eab308;
 }
+
+/* =========================================
+TEXT MUTED
+========================================= */
+
 small.text-muted {
-  color: var(--docpro-primary) !important; /* O gamitin ang #ffd700 kung mas gusto mo ng pure yellow gold */
+  color: #facc15 !important;
+}
+
+/* =========================================
+OPTIONAL GOLD TEXT
+========================================= */
+
+.text-warning,
+.text-gold {
+  color: #facc15 !important;
+}
+
+/* =========================================
+OPTIONAL GOLD BORDER
+========================================= */
+
+.border-warning,
+.border-gold {
+  border-color: #facc15 !important;
+}
+
+/* =========================================
+OPTIONAL GOLD BUTTON
+========================================= */
+
+.btn-warning,
+.btn-gold {
+  background: #facc15 !important;
+
+  border-color: #facc15 !important;
+
+  color: #05070b !important;
+
+  font-weight: 600;
+}
+
+.btn-warning:hover,
+.btn-gold:hover {
+  background: #eab308 !important;
+
+  border-color: #eab308 !important;
+
+  color: #000000 !important;
 }
