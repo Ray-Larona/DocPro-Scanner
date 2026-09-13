@@ -74,6 +74,16 @@ document.getElementById("scanCard").addEventListener("click", function () {
     history.pushState({ screen: "scanner" }, "", location.href);
 });
 
+<div id="documentsCard" class="dashboard-card text-center p-4" style="cursor: pointer;">
+    <div class="dashboard-icon text-success mb-3">
+        <i class="bi bi-folder-fill display-5"></i>
+    </div>
+    <h4>Documents</h4>
+    <p class="text-muted mb-0">View recent scanned history.</p>
+</div>
+
+});
+
 document.getElementById("logoutCard").addEventListener("click", function () {
     stopCamera();
     sessionStorage.removeItem("docproLoggedIn");
